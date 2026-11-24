@@ -1,0 +1,2187 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lab Maya Matematika: Keliling & Luas Bangun Datar (Fase F)</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            blueprint: {
+              bg: '#0B132B',
+              panel: '#111C3A',
+              card: '#162447',
+              border: '#253B6E',
+              cyan: '#00E5FF',
+              amber: '#FFB703',
+              emerald: '#10B981',
+              rose: '#FB7185',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #0B132B;
+      color: #F1F5F9;
+      user-select: none;
+    }
+
+    /* Latar Grid Blueprint Halus */
+    .bg-blueprint-grid {
+      background-color: #0B132B;
+      background-image: 
+        linear-gradient(to right, rgba(37, 59, 110, 0.28) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(37, 59, 110, 0.28) 1px, transparent 1px),
+        linear-gradient(to right, rgba(0, 229, 255, 0.08) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 229, 255, 0.08) 1px, transparent 1px);
+      background-size: 24px 24px, 24px 24px, 120px 120px, 120px 120px;
+    }
+
+    /* Scrollbar Presisi */
+    .custom-scroll::-webkit-scrollbar {
+      width: 7px;
+      height: 7px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 9999px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #253B6E;
+      border-radius: 9999px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb:hover {
+      background: #00E5FF;
+    }
+
+    /* Animasi Tab */
+    .tab-panel {
+      animation: fadeSlide 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Tombol Interaktif */
+    .btn-studio {
+      transition: all 0.15s ease;
+    }
+    .btn-studio:hover {
+      transform: translateY(-1px);
+    }
+    .btn-studio:active {
+      transform: translateY(1px) scale(0.98);
+    }
+
+    /* Custom Slider */
+    input[type="range"] {
+      -webkit-appearance: none;
+      background: transparent;
+    }
+    input[type="range"]::-webkit-slider-runnable-track {
+      height: 6px;
+      background: #253B6E;
+      border-radius: 999px;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 18px;
+      width: 18px;
+      border-radius: 50%;
+      background: #00E5FF;
+      border: 2px solid #0B132B;
+      box-shadow: 0 0 8px rgba(0, 229, 255, 0.7);
+      cursor: pointer;
+      margin-top: -6px;
+    }
+
+    /* Tipografi Pecahan Matematika */
+    .math-frac {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      vertical-align: middle;
+      margin: 0 3px;
+      font-size: 0.88em;
+      line-height: 1.05;
+    }
+    .math-frac > span:first-child {
+      border-bottom: 1.5px solid currentColor;
+      padding: 0 3px 1px;
+    }
+    .math-frac > span:last-child {
+      padding: 1px 3px 0;
+    }
+
+    @media print {
+      body {
+        overflow: visible !important;
+        height: auto !important;
+        background: #FFFFFF !important;
+        color: #0F172A !important;
+      }
+      #app-header, #no-print-actions {
+        display: none !important;
+      }
+      #panel-lkpd {
+        display: block !important;
+        overflow: visible !important;
+        height: auto !important;
+      }
+      .print-light {
+        background: #FFFFFF !important;
+        color: #0F172A !important;
+        border-color: #CBD5E1 !important;
+      }
+    }
+  </style>
+</head>
+<body class="flex flex-col h-screen w-screen overflow-hidden bg-blueprint-grid antialiased">
+
+  <!-- ==================== HEADER STUDIO & 5 TAB NAVIGASI ==================== -->
+  <header id="app-header" class="shrink-0 bg-blueprint-panel/95 backdrop-blur-md border-b border-blueprint-border px-3 lg:px-6 py-2 flex flex-wrap items-center justify-between gap-2 z-20 shadow-lg">
+    <!-- Identitas Aplikasi -->
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-600 p-0.5 shadow-md shadow-cyan-500/20 shrink-0">
+        <div class="w-full h-full bg-blueprint-bg rounded-[10px] flex items-center justify-center">
+          <svg viewBox="0 0 24 24" class="w-6 h-6 text-blueprint-cyan" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" stroke-dasharray="3 2" />
+            <polygon points="12,5 19,18 5,18" fill="rgba(0,229,255,0.2)" stroke="#FFB703" stroke-width="2"/>
+          </svg>
+        </div>
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <h1 class="font-bold text-sm sm:text-base lg:text-lg text-white tracking-tight">
+            Lab Maya Matematika: Keliling & Luas Bangun Datar
+          </h1>
+          <span class="px-2 py-0.5 rounded-md text-[11px] font-mono font-bold bg-cyan-500/15 text-blueprint-cyan border border-cyan-400/30">
+            FASE F
+          </span>
+        </div>
+        <p class="text-xs text-slate-400 hidden sm:block">
+          Precision Geometry Studio • Pendekatan Kotak Satuan & Dekomposisi Bidang
+        </p>
+      </div>
+    </div>
+
+    <!-- 5 Tab Navigasi Utama -->
+    <nav class="flex flex-wrap items-center bg-blueprint-bg/90 p-1 rounded-xl border border-blueprint-border gap-1" role="tablist">
+      <button onclick="switchTab('teori')" id="tab-btn-teori" class="tab-nav-btn btn-studio flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-blueprint-cyan text-slate-950 shadow-sm">
+        <span>📐</span><span>Teori</span>
+      </button>
+      <button onclick="switchTab('prosedur')" id="tab-btn-prosedur" class="tab-nav-btn btn-studio flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-slate-300 hover:text-white hover:bg-blueprint-card">
+        <span>🧭</span><span>Prosedur</span>
+      </button>
+      <button onclick="switchTab('simulasi')" id="tab-btn-simulasi" class="tab-nav-btn btn-studio flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-slate-300 hover:text-white hover:bg-blueprint-card">
+        <span>🎛️</span><span>Simulasi</span>
+      </button>
+      <button onclick="switchTab('lkpd')" id="tab-btn-lkpd" class="tab-nav-btn btn-studio flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-slate-300 hover:text-white hover:bg-blueprint-card">
+        <span>📝</span><span>LKPD</span>
+      </button>
+      <button onclick="switchTab('pengembang')" id="tab-btn-pengembang" class="tab-nav-btn btn-studio flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-slate-300 hover:text-white hover:bg-blueprint-card">
+        <span>🎓</span><span>Pengembang</span>
+      </button>
+    </nav>
+
+    <!-- Kontrol Audio & Reset Global -->
+    <div class="flex items-center gap-2 shrink-0">
+      <button onclick="toggleAudio()" id="btn-audio" title="Nyalakan / Matikan Efek Suara" class="btn-studio flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-blueprint-card hover:bg-slate-800 text-cyan-300 border border-blueprint-border">
+        <span id="audio-icon">🔊</span>
+        <span id="audio-label" class="hidden md:inline">Audio ON</span>
+      </button>
+      <button onclick="openResetModal()" title="Reset Seluruh Eksperimen" class="btn-studio flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 border border-rose-500/40">
+        <span>🔄</span>
+        <span class="hidden md:inline">Reset</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ==================== AREA KONTEN UTAMA (FULL SCREEN 16:9) ==================== -->
+  <main class="flex-1 min-h-0 w-full p-2.5 lg:p-4 overflow-hidden">
+
+    <!-- ==================== TAB 1: TEORI (7 BANGUN DATAR + KOTAK SATUAN) ==================== -->
+    <section id="panel-teori" class="tab-panel h-full w-full flex flex-col bg-blueprint-panel/90 rounded-2xl border border-blueprint-border shadow-2xl overflow-hidden">
+      <!-- Bar Pemilih 7 Bangun Datar -->
+      <div class="px-4 py-2.5 bg-blueprint-card/90 border-b border-blueprint-border flex flex-wrap items-center justify-between gap-2 shrink-0">
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-mono font-bold uppercase tracking-wider text-blueprint-amber">Pilih Bangun:</span>
+          <div id="teori-shape-tabs" class="flex flex-wrap gap-1.5">
+            <!-- Diisi otomatis via JS -->
+          </div>
+        </div>
+        <button onclick="jumpToSimWithShape()" class="btn-studio px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-400/40">
+          Uji Bangun Ini di Simulasi 🚀
+        </button>
+      </div>
+
+      <!-- Konten Teori Detail (Scrollable Vertikal Lembut) -->
+      <div id="teori-content-area" class="flex-1 overflow-y-auto custom-scroll p-4 lg:p-6">
+        <!-- Diisi dinamis oleh JS sesuai bangun yang dipilih -->
+      </div>
+    </section>
+
+    <!-- ==================== TAB 2: PROSEDUR EKSPERIMEN ==================== -->
+    <section id="panel-prosedur" class="tab-panel hidden h-full w-full flex flex-col bg-blueprint-panel/90 rounded-2xl border border-blueprint-border shadow-2xl overflow-hidden">
+      <div class="px-5 py-3 bg-blueprint-card/90 border-b border-blueprint-border flex flex-wrap items-center justify-between gap-2 shrink-0">
+        <div>
+          <h2 class="text-base sm:text-lg font-bold text-white">🧭 Prosedur Eksperimen Laboratorium Geometri (Fase F)</h2>
+          <p class="text-xs text-slate-400">Panduan sistematis memahami penurunan rumus keliling & luas berbasis kotak satuan serta pemodelan poligon.</p>
+        </div>
+        <button onclick="switchTab('simulasi')" class="btn-studio px-4 py-2 rounded-xl text-xs font-bold bg-blueprint-cyan text-slate-950 shadow">
+          Mulai Eksperimen Simulasi →
+        </button>
+      </div>
+
+      <div class="flex-1 overflow-y-auto custom-scroll p-4 lg:p-6 space-y-5">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- Langkah 1 -->
+          <div class="bg-blueprint-card border border-blueprint-border rounded-2xl p-4 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="w-8 h-8 rounded-lg bg-cyan-500/20 border border-cyan-400/40 text-blueprint-cyan font-mono font-bold flex items-center justify-center">01</span>
+                <span class="text-xs font-mono text-slate-400">KONSEP DASAR</span>
+              </div>
+              <h3 class="font-bold text-base text-white mb-2">Analisis Grid Satuan (Tab Teori)</h3>
+              <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                Pelajari ketujuh bangun datar pada tab <strong>Teori</strong>. Perhatikan bagaimana <strong>Keliling</strong> diukur dengan menyusuri sisi luar kotak satuan (termasuk sisi miring via Teorema Pythagoras $\sqrt{\Delta x^2 + \Delta y^2}$), dan <strong>Luas</strong> diukur sebagai jumlah persegi satuan $1 \times 1$ di dalam bidang.
+              </p>
+            </div>
+            <div class="mt-4 pt-2 border-t border-blueprint-border text-[11px] font-mono text-cyan-300">
+              Output: Memahami asal-usul rumus luas
+            </div>
+          </div>
+
+          <!-- Langkah 2 -->
+          <div class="bg-blueprint-card border border-blueprint-border rounded-2xl p-4 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-400/40 text-blueprint-amber font-mono font-bold flex items-center justify-center">02</span>
+                <span class="text-xs font-mono text-slate-400">MODE A SIMULASI</span>
+              </div>
+              <h3 class="font-bold text-base text-white mb-2">Eksplorasi 7 Bangun & Animasi</h3>
+              <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                Buka tab <strong>Simulasi → Mode A</strong>. Ubah parameter ukuran melalui slider, lalu jalankan 3 tombol eksperimen: <strong>Hitung Kotak Satuan</strong>, <strong>Telusuri Keliling</strong>, dan <strong>Bukti Visual Luas (Transformasi ke Persegi Panjang)</strong>.
+              </p>
+            </div>
+            <div class="mt-4 pt-2 border-t border-blueprint-border text-[11px] font-mono text-amber-300">
+              Output: Verifikasi konservasi luas bidang
+            </div>
+          </div>
+
+          <!-- Langkah 3 -->
+          <div class="bg-blueprint-card border border-blueprint-border rounded-2xl p-4 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-400/40 text-emerald-400 font-mono font-bold flex items-center justify-center">03</span>
+                <span class="text-xs font-mono text-slate-400">MODE B SIMULASI</span>
+              </div>
+              <h3 class="font-bold text-base text-white mb-2">Konstruksi Geo-Grid Drawer</h3>
+              <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                Beralih ke <strong>Mode B: Kanvas Gambar Bebas</strong>. Klik titik-titik sudut pada perpotongan grid (<em>snap-to-grid</em>) untuk membentuk poligon sendiri, atau gunakan <strong>Preset Cepat</strong> lalu geser titik sudutnya (<em>Drag Vertex</em>) untuk mengamati perubahan keliling & luas secara real-time.
+              </p>
+            </div>
+            <div class="mt-4 pt-2 border-t border-blueprint-border text-[11px] font-mono text-emerald-300">
+              Output: Pemodelan poligon koordinat
+            </div>
+          </div>
+
+          <!-- Langkah 4 -->
+          <div class="bg-blueprint-card border border-blueprint-border rounded-2xl p-4 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="w-8 h-8 rounded-lg bg-rose-500/20 border border-rose-400/40 text-rose-400 font-mono font-bold flex items-center justify-center">04</span>
+                <span class="text-xs font-mono text-slate-400">EVALUASI LKPD</span>
+              </div>
+              <h3 class="font-bold text-base text-white mb-2">Evaluasi & Pembuktian (LKPD)</h3>
+              <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                Selesaikan 7 soal evaluasi berbasis grid satuan pada <strong>Bagian A</strong> dan tuliskan analisis pembuktian hubungan luas antarbangun pada <strong>Bagian B</strong>. Klik <strong>Cek Nilai</strong> lalu unduh atau cetak laporan hasil belajar.
+              </p>
+            </div>
+            <div class="mt-4 pt-2 border-t border-blueprint-border text-[11px] font-mono text-rose-300">
+              Output: Laporan portofolio Fase F
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabel Ringkasan Konsep Dasar -->
+        <div class="bg-blueprint-card border border-blueprint-border rounded-2xl p-4">
+          <h3 class="font-bold text-sm text-blueprint-cyan uppercase tracking-wider mb-3">📊 Ringkasan Prinsip Dasar Kotak Satuan</h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+            <div class="bg-blueprint-bg/80 p-3 rounded-xl border border-blueprint-border">
+              <strong class="text-amber-400 block mb-1">1. Satuan Panjang (Keliling)</strong>
+              <p class="text-slate-300">1 sisi kotak grid = <strong>1 satuan panjang</strong>. Sisi diagonal yang melintasi $\Delta x$ kotak mendatar dan $\Delta y$ kotak tegak dihitung dengan Pythagoras: $s = \sqrt{\Delta x^2 + \Delta y^2}$.</p>
+            </div>
+            <div class="bg-blueprint-bg/80 p-3 rounded-xl border border-blueprint-border">
+              <strong class="text-cyan-400 block mb-1">2. Satuan Luas (Bidang)</strong>
+              <p class="text-slate-300">1 kotak grid utuh ($1 \times 1$) = <strong>1 satuan luas</strong>. Dua potongan segitiga siku-siku setengah kotak yang kongruen bernilai $0,5 + 0,5 = 1\text{ satuan luas}$.</p>
+            </div>
+            <div class="bg-blueprint-bg/80 p-3 rounded-xl border border-blueprint-border">
+              <strong class="text-emerald-400 block mb-1">3. Prinsip Konservasi Luas</strong>
+              <p class="text-slate-300">Memotong bagian suatu bangun datar dan memindahkannya tanpa tumpang tindih <strong>tidak mengubah luasnya</strong>, namun mengubahnya menjadi persegi panjang yang mudah dihitung.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 3: SIMULASI (MODE A & MODE B) ==================== -->
+    <section id="panel-simulasi" class="tab-panel hidden h-full w-full flex flex-col gap-2.5 overflow-hidden">
+      <!-- Switcher Mode A & Mode B -->
+      <div class="shrink-0 bg-blueprint-panel/95 border border-blueprint-border rounded-xl px-3 py-2 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex flex-wrap items-center gap-2">
+          <button onclick="setSimMode('A')" id="sim-mode-btn-A" class="btn-studio px-3.5 py-1.5 rounded-lg text-xs font-bold bg-blueprint-cyan text-slate-950 shadow">
+            📐 Mode A: Eksplorator 7 Bangun Datar (Grid Satuan)
+          </button>
+          <button onclick="setSimMode('B')" id="sim-mode-btn-B" class="btn-studio px-3.5 py-1.5 rounded-lg text-xs font-bold bg-blueprint-card text-slate-300 hover:text-white border border-blueprint-border">
+            ✏️ Mode B: Kanvas Gambar Bebas Kotak-Kotak (Geo-Grid Drawer)
+          </button>
+        </div>
+        <div class="text-xs font-mono text-slate-400 hidden lg:block">
+          Skala Grid: <span class="text-cyan-300 font-bold">1 kotak = 1 satuan</span>
+        </div>
+      </div>
+
+      <!-- ==================== MODE A: EKSPLORATOR 7 BANGUN DATAR ==================== -->
+      <div id="sim-container-A" class="flex-1 min-h-0 grid grid-cols-12 gap-3 overflow-hidden">
+        <!-- Panel Kiri (3 Kolom): Pemilih Bangun & Parameter Slider -->
+        <div class="col-span-12 md:col-span-3 bg-blueprint-panel/95 rounded-2xl border border-blueprint-border p-3 flex flex-col justify-between overflow-hidden">
+          <div class="overflow-y-auto custom-scroll pr-1 space-y-3">
+            <div>
+              <span class="text-[11px] font-mono font-bold uppercase tracking-wider text-cyan-400 block mb-1.5">1. Pilih Bangun Datar</span>
+              <div id="simA-shape-list" class="grid grid-cols-2 md:grid-cols-1 gap-1.5">
+                <!-- Diisi via JS -->
+              </div>
+            </div>
+
+            <div class="pt-2 border-t border-blueprint-border">
+              <span class="text-[11px] font-mono font-bold uppercase tracking-wider text-amber-400 block mb-2">2. Atur Ukuran (Satuan)</span>
+              <div id="simA-sliders" class="space-y-2.5">
+                <!-- Diisi dinamis via JS -->
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-2 border-t border-blueprint-border mt-2 shrink-0">
+            <button onclick="resetSimA()" class="btn-studio w-full py-2 rounded-xl text-xs font-bold bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/40">
+              🔄 Reset Ukuran & Animasi
+            </button>
+          </div>
+        </div>
+
+        <!-- Panel Tengah (6 Kolom): Kanvas Grid Interaktif & Tombol Animasi -->
+        <div class="col-span-12 md:col-span-6 bg-blueprint-panel/95 rounded-2xl border border-blueprint-border p-2.5 flex flex-col overflow-hidden">
+          <!-- Toolbar Animasi Atas -->
+          <div class="flex flex-wrap items-center justify-between gap-1.5 pb-2 shrink-0">
+            <button onclick="startCountSquaresAnim()" class="btn-studio px-2.5 py-1.5 rounded-lg text-xs font-bold bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-400/40">
+              🔢 Hitung Kotak Satuan
+            </button>
+            <button onclick="startPerimeterAnim()" class="btn-studio px-2.5 py-1.5 rounded-lg text-xs font-bold bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-400/40">
+              📏 Telusuri Keliling
+            </button>
+            <button onclick="toggleTransformAnim()" id="btn-transform-anim" class="btn-studio px-2.5 py-1.5 rounded-lg text-xs font-bold bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-400/40">
+              ✂️ Bukti Visual Luas
+            </button>
+          </div>
+
+          <!-- Area Kanvas Mode A -->
+          <div id="canvasA-wrap" class="flex-1 w-full min-h-0 rounded-xl border border-blueprint-border bg-[#080F22] relative overflow-hidden">
+            <canvas id="canvas-mode-A" class="w-full h-full block"></canvas>
+            <!-- Badge Status Animasi -->
+            <div id="simA-status-banner" class="absolute bottom-2.5 left-2.5 right-2.5 bg-blueprint-bg/90 backdrop-blur border border-blueprint-border rounded-xl px-3 py-1.5 text-xs text-slate-200 flex items-center justify-between">
+              <span id="simA-status-text">Gunakan slider di kiri atau klik tombol animasi di atas untuk mengamati kotak satuan.</span>
+              <span id="simA-anim-counter" class="font-mono font-bold text-blueprint-cyan shrink-0 ml-2"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel Kanan (3 Kolom): Rumus & Perhitungan Real-Time -->
+        <div class="col-span-12 md:col-span-3 bg-blueprint-panel/95 rounded-2xl border border-blueprint-border p-3 flex flex-col justify-between overflow-y-auto custom-scroll">
+          <div id="simA-calc-panel" class="space-y-3">
+            <!-- Diisi otomatis via JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== MODE B: KANVAS GAMBAR BEBAS KOTAK-KOTAK ==================== -->
+      <div id="sim-container-B" class="hidden flex-1 min-h-0 grid grid-cols-12 gap-3 overflow-hidden">
+        <!-- Panel Kiri (3 Kolom): Alat Gambar & Preset Poligon -->
+        <div class="col-span-12 md:col-span-3 bg-blueprint-panel/95 rounded-2xl border border-blueprint-border p-3 flex flex-col justify-between overflow-hidden">
+          <div class="overflow-y-auto custom-scroll pr-1 space-y-3">
+            <div>
+              <span class="text-[11px] font-mono font-bold uppercase tracking-wider text-cyan-400 block mb-1.5">1. Alat Gambar Geo-Grid</span>
+              <div class="space-y-1.5">
+                <button onclick="setDrawTool('draw')" id="tool-btn-draw" class="btn-studio w-full text-left px-3 py-2 rounded-xl text-xs font-bold bg-blueprint-cyan text-slate-950 flex items-center gap-2">
+                  <span>📍</span><span>Klik Titik Sudut (Buat Poligon)</span>
+                </button>
+                <button onclick="setDrawTool('drag')" id="tool-btn-drag" class="btn-studio w-full text-left px-3 py-2 rounded-xl text-xs font-bold bg-blueprint-card text-slate-300 border border-blueprint-border flex items-center gap-2">
+                  <span>✋</span><span>Geser Titik Sudut (Drag Vertex)</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="pt-2 border-t border-blueprint-border">
+              <span class="text-[11px] font-mono font-bold uppercase tracking-wider text-amber-400 block mb-1.5">2. Preset Cepat ke Kanvas</span>
+              <div class="grid grid-cols-2 gap-1.5">
+                <button onclick="loadPresetToCanvasB('persegi')" class="btn-studio px-2 py-1.5 rounded-lg text-xs font-semibold bg-blueprint-card hover:bg-slate-800 border border-blueprint-border text-slate-200">Persegi</button>
+                <button onclick="loadPresetToCanvasB('persegi_panjang')" class="btn-studio px-2 py-1.5 rounded-lg text-xs font-semibold bg-blueprint-card hover:bg-slate-800 border border-blueprint-border text-slate-200">P. Panjang</button>
+                <button onclick="loadPresetToCanvasB('segitiga')" class="btn-studio px-2 py-1.5 rounded-lg text-xs font-semibold bg-blueprint-card hover:bg-slate-800 border border-blueprint-border text-slate-200">Segitiga</button>
+                <button onclick="loadPresetToCanvasB('jajar_genjang')" class="btn-studio px-2 py-1.5 rounded-lg text-xs font-semibold bg-blueprint-card hover:bg-slate-800 border border-blueprint-border text-slate-200">J. Genjang</button>
+                <button onclick="loadPresetToCanvasB('trapesium')" class="btn-studio px-2 py-1.5 rounded-lg text-xs font-semibold bg-blueprint-card hover:bg-slate-800 border border-blueprint-border text-slate-200">Trapesium</button>
+                <button onclick="loadPresetToCanvasB('belah_ketupat')" class="btn-studio px-2 py-1.5 rounded-lg text-xs font-semibold bg-blueprint-card hover:bg-slate-800 border border-blueprint-border text-slate-200">B. Ketupat</button>
+                <button onclick="loadPresetToCanvasB('layang_layang')" class="btn-studio col-span-2 px-2 py-1.5 rounded-lg text-xs font-semibold bg-blueprint-card hover:bg-slate-800 border border-blueprint-border text-slate-200">Layang-layang</button>
+              </div>
+            </div>
+
+            <div class="pt-2 border-t border-blueprint-border space-y-1.5">
+              <span class="text-[11px] font-mono font-bold uppercase tracking-wider text-emerald-400 block">3. Opsi Tampilan Grid</span>
+              <label class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+                <input type="checkbox" id="chk-show-unit-cells" checked onchange="renderCanvasB()" class="accent-cyan-400 rounded">
+                <span>Arsir Kotak Satuan di Dalam</span>
+              </label>
+              <label class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+                <input type="checkbox" id="chk-show-side-labels" checked onchange="renderCanvasB()" class="accent-cyan-400 rounded">
+                <span>Tampilkan Panjang Tiap Sisi</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="pt-2 border-t border-blueprint-border mt-2 space-y-1.5 shrink-0">
+            <div class="grid grid-cols-2 gap-1.5">
+              <button onclick="undoVertexB()" class="btn-studio py-1.5 rounded-lg text-xs font-bold bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40">
+                ↩️ Undo Titik
+              </button>
+              <button onclick="downloadCanvasB()" class="btn-studio py-1.5 rounded-lg text-xs font-bold bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40">
+                💾 Unduh PNG
+              </button>
+            </div>
+            <button onclick="resetCanvasB()" class="btn-studio w-full py-1.5 rounded-lg text-xs font-bold bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/40">
+              🗑️ Hapus / Reset Kanvas
+            </button>
+          </div>
+        </div>
+
+        <!-- Panel Tengah (6 Kolom): Kanvas Gambar Kotak-Kotak Snap-to-Grid -->
+        <div class="col-span-12 md:col-span-6 bg-blueprint-panel/95 rounded-2xl border border-blueprint-border p-2.5 flex flex-col overflow-hidden">
+          <div class="flex items-center justify-between pb-1.5 px-1 shrink-0">
+            <span class="text-xs font-bold text-white">Kanvas Geo-Grid (Snap-to-Grid Aktif)</span>
+            <span id="canvasB-coord-readout" class="font-mono text-xs text-cyan-300 bg-blueprint-bg px-2 py-0.5 rounded border border-blueprint-border">Koordinat: (0, 0)</span>
+          </div>
+          <div id="canvasB-wrap" class="flex-1 w-full min-h-0 rounded-xl border border-blueprint-border bg-[#080F22] relative overflow-hidden">
+            <canvas id="canvas-mode-B" class="w-full h-full block cursor-crosshair"></canvas>
+            <div class="absolute bottom-2 left-2.5 right-2.5 bg-blueprint-bg/90 backdrop-blur border border-blueprint-border rounded-lg px-3 py-1 text-[11px] text-slate-300">
+              💡 <strong>Petunjuk:</strong> Klik perpotongan garis kotak untuk menambah titik sudut. Klik kembali pada <strong>titik pertama (berwarna kuning)</strong> untuk menutup bangun datar!
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel Kanan (3 Kolom): Analisis Geometri Real-Time Poligon -->
+        <div class="col-span-12 md:col-span-3 bg-blueprint-panel/95 rounded-2xl border border-blueprint-border p-3 flex flex-col justify-between overflow-y-auto custom-scroll">
+          <div id="simB-analysis-panel" class="space-y-3">
+            <!-- Diisi otomatis saat poligon digambar/diedit -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 4: LKPD (LEMBAR KERJA PESERTA DIDIK) ==================== -->
+    <section id="panel-lkpd" class="tab-panel hidden h-full w-full grid grid-cols-12 gap-3 overflow-hidden">
+      <!-- Kolom Kiri (4 Kolom): Identitas, Skor Otomatis & Aksi -->
+      <div class="col-span-12 md:col-span-4 bg-blueprint-panel/95 print-light rounded-2xl border border-blueprint-border p-4 flex flex-col justify-between overflow-y-auto custom-scroll">
+        <div class="space-y-3">
+          <div class="border-b border-blueprint-border pb-2">
+            <span class="text-[11px] font-mono font-bold uppercase tracking-wider text-blueprint-cyan">Evaluasi Fase F</span>
+            <h2 class="text-lg font-bold text-white print-light">📝 LKPD Keliling & Luas</h2>
+          </div>
+
+          <div class="space-y-2">
+            <div>
+              <label class="block text-xs font-bold text-slate-300 print-light mb-1">Nama Peserta Didik:</label>
+              <input type="text" id="lkpd-nama" placeholder="Masukkan nama lengkap..." class="w-full bg-blueprint-bg print-light border border-blueprint-border focus:border-cyan-400 rounded-xl px-3 py-1.5 text-xs sm:text-sm text-white outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-300 print-light mb-1">Kelas / Kelompok:</label>
+              <input type="text" id="lkpd-kelas" placeholder="Contoh: XII-A / Kelompok 2" class="w-full bg-blueprint-bg print-light border border-blueprint-border focus:border-cyan-400 rounded-xl px-3 py-1.5 text-xs sm:text-sm text-white outline-none" />
+            </div>
+          </div>
+
+          <!-- Kartu Skor -->
+          <div class="bg-blueprint-card print-light border border-blueprint-border rounded-xl p-3 text-center">
+            <div class="text-[11px] font-mono uppercase text-slate-400">Hasil Penilaian Bagian A</div>
+            <div id="lkpd-score-val" class="text-3xl font-mono font-bold text-blueprint-cyan my-1">0 / 100</div>
+            <p id="lkpd-feedback-msg" class="text-xs text-slate-300 print-light">
+              Jawab 7 soal grid satuan di samping lalu klik tombol <strong>Cek Nilai</strong>.
+            </p>
+          </div>
+        </div>
+
+        <div id="no-print-actions" class="space-y-2 pt-3 border-t border-blueprint-border mt-2">
+          <button onclick="gradeLKPD()" class="btn-studio w-full py-2 rounded-xl text-xs font-bold bg-blueprint-cyan text-slate-950 shadow">
+            ✅ Cek Nilai Otomatis
+          </button>
+          <div class="grid grid-cols-2 gap-2">
+            <button onclick="downloadLKPD()" class="btn-studio py-1.5 rounded-xl text-xs font-bold bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-400/40">
+              📥 Unduh (.txt)
+            </button>
+            <button onclick="window.print()" class="btn-studio py-1.5 rounded-xl text-xs font-bold bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-400/40">
+              🖨️ Cetak LKPD
+            </button>
+          </div>
+          <button onclick="resetLKPD()" class="btn-studio w-full py-1.5 rounded-xl text-xs font-bold bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/40">
+            🔄 Reset LKPD
+          </button>
+        </div>
+      </div>
+
+      <!-- Kolom Kanan (8 Kolom): Bagian A (7 Soal Pilihan Ganda) & Bagian B (Analisis Pembuktian) -->
+      <div class="col-span-12 md:col-span-8 bg-blueprint-panel/95 print-light rounded-2xl border border-blueprint-border p-4 flex flex-col overflow-hidden">
+        <div class="pb-2 mb-2 border-b border-blueprint-border flex items-center justify-between shrink-0">
+          <h3 class="font-bold text-sm sm:text-base text-white print-light">Bagian A: Soal Visual Kotak Satuan (7 Bangun Datar)</h3>
+          <span class="text-xs font-mono text-cyan-300">1 kotak = 1 satuan</span>
+        </div>
+
+        <div class="flex-1 overflow-y-auto custom-scroll pr-1 space-y-4">
+          <div id="lkpd-questions-container" class="space-y-3">
+            <!-- Diisi otomatis via JS -->
+          </div>
+
+          <!-- Bagian B: Tugas Eksplorasi & Analisis Konsep -->
+          <div class="bg-blueprint-card print-light border border-amber-400/40 rounded-xl p-4 space-y-2">
+            <h4 class="font-bold text-sm text-blueprint-amber">Bagian B: Tugas Eksplorasi & Analisis Konsep</h4>
+            <p class="text-xs text-slate-300 print-light leading-relaxed">
+              Berdasarkan simulasi <strong>Bukti Visual Luas (Transformasi ke Persegi Panjang)</strong> pada Tab Simulasi, jelaskan bagaimana rumus luas <strong>Jajar Genjang</strong> ($L = a \times t$), <strong>Trapesium</strong> ($L = \frac{1}{2}(a+b)\times t$), atau <strong>Belah Ketupat</strong> ($L = \frac{1}{2} \times d_1 \times d_2$) dapat diturunkan dari luas <strong>Persegi Panjang</strong>!
+            </p>
+            <textarea id="lkpd-essay" rows="3" placeholder="Tuliskan analisis pembuktian geometris Anda di sini..." class="w-full bg-blueprint-bg print-light border border-blueprint-border focus:border-amber-400 rounded-xl p-2.5 text-xs sm:text-sm text-white outline-none resize-none"></textarea>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 5: PENGEMBANG ==================== -->
+    <section id="panel-pengembang" class="tab-panel hidden h-full w-full bg-blueprint-panel/95 rounded-2xl border border-blueprint-border p-5 lg:p-6 overflow-y-auto custom-scroll">
+      <div class="max-w-5xl mx-auto space-y-5">
+        <div class="bg-blueprint-card border border-blueprint-border rounded-2xl p-5 flex flex-wrap items-center justify-between gap-4">
+          <div class="flex items-center gap-4">
+            <div class="w-14 h-14 rounded-2xl bg-cyan-500/15 border border-cyan-400/40 flex items-center justify-center text-3xl">
+              📐
+            </div>
+            <div>
+              <span class="px-2.5 py-0.5 rounded text-[11px] font-mono font-bold bg-cyan-500/15 text-blueprint-cyan border border-cyan-400/30">
+                KURIKULUM MERDEKA • MATEMATIKA FASE F
+              </span>
+              <h2 class="text-xl font-bold text-white mt-1">Lab Maya Matematika: Keliling & Luas Bangun Datar</h2>
+              <p class="text-xs sm:text-sm text-slate-400">Media Eksplorasi Geometri Analitik & Dekomposisi Bidang Berbasis Kotak Satuan</p>
+            </div>
+          </div>
+          <button onclick="switchTab('simulasi')" class="btn-studio px-4 py-2 rounded-xl text-xs font-bold bg-blueprint-cyan text-slate-950 shadow">
+            Buka Studio Simulasi 🎛️
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-blueprint-card border border-blueprint-border rounded-2xl p-5 space-y-3">
+            <h3 class="font-bold text-base text-blueprint-cyan">🎯 Capaian Pembelajaran (Fase F)</h3>
+            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              Peserta didik mampu memodelkan masalah kontekstual ke dalam bentuk bangun datar pada bidang koordinat/grid satuan, membuktikan rumus keliling dan luas melalui prinsip dekomposisi bidang (konservasi luas) serta Teorema Pythagoras, dan mengaplikasikannya dalam pemecahan masalah geometri secara analitis.
+            </p>
+            <div class="bg-blueprint-bg/80 p-3 rounded-xl border border-blueprint-border text-xs text-slate-300 space-y-1">
+              <p><strong class="text-white">Pengembang:</strong> Tim Pengembangan Media Sains & Matematika Digital</p>
+              <p><strong class="text-white">Teknologi:</strong> HTML5 Canvas 2D, SVG Vector Geometry, Web Audio API Synthesizer</p>
+              <p><strong class="text-white">Lisensi:</strong> Lisensi Terbuka untuk Pendidikan (Bebas digunakan untuk pembelajaran & praktikum sekolah)</p>
+            </div>
+          </div>
+
+          <div class="bg-blueprint-card border border-blueprint-border rounded-2xl p-5 space-y-3">
+            <h3 class="font-bold text-base text-blueprint-amber">📖 Petunjuk Penggunaan untuk Guru & Peserta Didik</h3>
+            <ul class="text-xs sm:text-sm text-slate-300 space-y-2 list-disc pl-5 leading-relaxed">
+              <li><strong>Pendekatan Konseptual:</strong> Arahkan peserta didik untuk tidak sekadar menghafal rumus, melainkan mengamati bukti visual pemotongan bangun (<em>rearrangement</em>) di Mode A Simulasi.</li>
+              <li><strong>Eksplorasi Mandiri (Geo-Grid Drawer):</strong> Pada Mode B Simulasi, peserta didik dapat membuat bangun datar miring atau tidak beraturan di grid dan memverifikasi hasil perhitungan menggunakan rumus koordinat Shoelace & jarak Euclidean.</li>
+              <li><strong>Asesmen Formatif:</strong> Gunakan Tab LKPD untuk menguji pemahaman visual serta penalaran deduktif siswa, lalu simpan hasilnya dalam format laporan teks atau cetak fisik.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== MODAL KONFIRMASI RESET GLOBAL ==================== -->
+  <div id="reset-modal" class="hidden fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-blueprint-panel border border-rose-500/50 rounded-2xl max-w-md w-full p-5 shadow-2xl text-center">
+      <div class="text-3xl mb-2">🔄</div>
+      <h3 class="text-lg font-bold text-white mb-1">Reset Seluruh Lab Maya?</h3>
+      <p class="text-xs sm:text-sm text-slate-300 mb-5">Semua parameter di Simulasi Mode A, gambar poligon di Mode B, serta jawaban LKPD akan dikembalikan ke kondisi awal.</p>
+      <div class="flex justify-center gap-3">
+        <button onclick="closeResetModal()" class="btn-studio px-4 py-2 rounded-xl text-xs font-bold bg-blueprint-card text-slate-300 border border-blueprint-border">Batal</button>
+        <button onclick="confirmGlobalReset()" class="btn-studio px-4 py-2 rounded-xl text-xs font-bold bg-rose-500 text-white shadow">Ya, Reset Semua</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notifikasi -->
+  <div id="toast-box" class="fixed bottom-4 right-4 z-50 pointer-events-none opacity-0 translate-y-2 transition-all duration-200">
+    <div class="bg-blueprint-panel text-white px-4 py-2 rounded-xl shadow-xl border border-blueprint-cyan/50 text-xs font-bold flex items-center gap-2">
+      <span id="toast-icon">✨</span>
+      <span id="toast-msg">Notifikasi</span>
+    </div>
+  </div>
+
+  <!-- ==================== JAVASCRIPT ENGINE ==================== -->
+  <script>
+    // =========================================================================
+    // 1. WEB AUDIO API SYNTHESIZER (EFEK SUARA PRESISI TANPA FILE EKSTERNAL)
+    // =========================================================================
+    const SoundEngine = {
+      ctx: null,
+      enabled: true,
+
+      init() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (AudioCtx) this.ctx = new AudioCtx();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
+      },
+
+      click() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(750, now);
+        osc.frequency.exponentialRampToValueAtTime(320, now + 0.045);
+        gain.gain.setValueAtTime(0.08, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(now); osc.stop(now + 0.055);
+      },
+
+      tick(step = 0) {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(380 + (step % 16) * 28, now);
+        gain.gain.setValueAtTime(0.045, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(now); osc.stop(now + 0.045);
+      },
+
+      fanfare() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const notes = [523.25, 659.25, 783.99, 1046.5];
+        notes.forEach((f, i) => {
+          const now = this.ctx.currentTime + i * 0.07;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(f, now);
+          gain.gain.setValueAtTime(0.08, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+          osc.connect(gain); gain.connect(this.ctx.destination);
+          osc.start(now); osc.stop(now + 0.23);
+        });
+      },
+
+      error() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(210, now);
+        osc.frequency.linearRampToValueAtTime(150, now + 0.16);
+        gain.gain.setValueAtTime(0.06, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.17);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(now); osc.stop(now + 0.18);
+      },
+
+      sweep() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(640, now);
+        osc.frequency.exponentialRampToValueAtTime(200, now + 0.18);
+        gain.gain.setValueAtTime(0.08, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.19);
+        osc.connect(gain); gain.connect(this.ctx.destination);
+        osc.start(now); osc.stop(now + 0.2);
+      }
+    };
+
+    function toggleAudio() {
+      SoundEngine.enabled = !SoundEngine.enabled;
+      document.getElementById('audio-icon').textContent = SoundEngine.enabled ? '🔊' : '🔇';
+      document.getElementById('audio-label').textContent = SoundEngine.enabled ? 'Audio ON' : 'Audio OFF';
+      if (SoundEngine.enabled) {
+        SoundEngine.fanfare();
+        showToast('Efek suara diaktifkan', '🔊');
+      } else {
+        showToast('Efek suara dimatikan', '🔇');
+      }
+    }
+
+    function showToast(msg, icon = '✨') {
+      const box = document.getElementById('toast-box');
+      document.getElementById('toast-msg').textContent = msg;
+      document.getElementById('toast-icon').textContent = icon;
+      box.classList.remove('opacity-0', 'translate-y-2');
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => box.classList.add('opacity-0', 'translate-y-2'), 2300);
+    }
+
+    // =========================================================================
+    // 2. DATA MATERI 7 BANGUN DATAR (TAB TEORI)
+    // =========================================================================
+    const SHAPES_DATA = {
+      persegi: {
+        name: '1. Persegi',
+        shortName: 'Persegi',
+        basicKeliling: 'Keliling persegi adalah panjang seluruh pagar luar yang mengelilinginya. Karena keempat sisinya sama panjang (s satuan), kita cukup melangkah sejauh s + s + s + s.',
+        basicLuas: 'Bayangkan persegi bersisi 4 kotak satuan. Setiap baris berisi 4 kotak, dan ada 4 baris. Total seluruh persegi satuan di dalamnya adalah 4 × 4 = 16 kotak satuan.',
+        proofVisual: 'Persegi adalah bentuk dasar satuan luas itu sendiri. Susunan s baris × s kolom persegi satuan langsung menghasilkan rumus s².',
+        formulaK: 'K = 4 × s',
+        formulaL: 'L = s × s = s²',
+        exampleQ: 'Sebuah ubin keramik berbentuk persegi memiliki panjang sisi s = 6 satuan. Tentukan keliling dan luasnya!',
+        exampleA: 'Keliling K = 4 × 6 = 24 satuan. Luas L = 6 × 6 = 36 satuan luas (terdiri dari 36 kotak satuan).',
+        svg: `<svg viewBox="0 0 260 170" class="w-full h-full">
+          <defs><pattern id="g1" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" stroke="#253B6E" stroke-width="1"/></pattern></defs>
+          <rect width="260" height="170" fill="#080F22"/><rect width="260" height="170" fill="url(#g1)"/>
+          <rect x="80" y="30" width="80" height="80" fill="rgba(0,229,255,0.22)" stroke="#00E5FF" stroke-width="2.5"/>
+          <text x="120" y="22" fill="#FFB703" font-size="11" font-family="monospace" text-anchor="middle">s = 4 satuan</text>
+          <text x="172" y="74" fill="#FFB703" font-size="11" font-family="monospace">s = 4</text>
+          <text x="120" y="74" fill="#FFFFFF" font-size="11" font-weight="bold" text-anchor="middle">16 kotak</text>
+          <text x="130" y="145" fill="#94A3B8" font-size="10" text-anchor="middle">4 baris × 4 kolom = 16 persegi satuan</text>
+        </svg>`
+      },
+      persegi_panjang: {
+        name: '2. Persegi Panjang',
+        shortName: 'Persegi Panjang',
+        basicKeliling: 'Keliling diperoleh dengan berjalan mengelilingi 2 sisi panjang (p) dan 2 sisi lebar (l), yaitu p + l + p + l = 2(p + l).',
+        basicLuas: 'Pada persegi panjang berukuran p = 6 kotak dan l = 3 kotak, terdapat 3 baris kotak satuan yang masing-masing berisi 6 kotak. Jumlah seluruh kotaknya adalah 6 × 3 = 18 kotak satuan.',
+        proofVisual: 'Persegi panjang menjadi acuan utama (bentuk standar) bagi penurunan rumus luas segitiga, jajar genjang, trapesium, belah ketupat, dan layang-layang.',
+        formulaK: 'K = 2 × (p + l)',
+        formulaL: 'L = p × l',
+        exampleQ: 'Sebuah papan tulis memiliki panjang p = 8 satuan dan lebar l = 5 satuan. Hitung keliling dan luasnya!',
+        exampleA: 'Keliling K = 2 × (8 + 5) = 2 × 13 = 26 satuan. Luas L = 8 × 5 = 40 satuan luas.',
+        svg: `<svg viewBox="0 0 260 170" class="w-full h-full">
+          <defs><pattern id="g2" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" stroke="#253B6E" stroke-width="1"/></pattern></defs>
+          <rect width="260" height="170" fill="#080F22"/><rect width="260" height="170" fill="url(#g2)"/>
+          <rect x="60" y="40" width="120" height="60" fill="rgba(16,185,129,0.22)" stroke="#10B981" stroke-width="2.5"/>
+          <text x="120" y="32" fill="#FFB703" font-size="11" font-family="monospace" text-anchor="middle">p = 6 satuan</text>
+          <text x="190" y="74" fill="#FFB703" font-size="11" font-family="monospace">l = 3</text>
+          <text x="120" y="74" fill="#FFFFFF" font-size="11" font-weight="bold" text-anchor="middle">6 × 3 = 18 kotak</text>
+        </svg>`
+      },
+      segitiga: {
+        name: '3. Segitiga (Siku-siku & Sama Kaki)',
+        shortName: 'Segitiga',
+        basicKeliling: 'Keliling segitiga adalah jumlah panjang ketiga sisinya (sisi a + sisi b + sisi c). Jika sisi miringnya diagonal pada grid, panjangnya dihitung dengan Teorema Pythagoras: √(Δx² + Δy²).',
+        basicLuas: 'Perhatikan kotak-kotak di dalam segitiga: ada kotak penuh dan ada potongan setengah kotak di sepanjang sisi miring. Jika dua potongan segitiga siku-siku digabungkan, akan membentuk tepat sebuah persegi panjang berukuran a × t!',
+        proofVisual: 'Sebuah persegi panjang berukuran alas (a) × tinggi (t) jika dipotong menurut diagonalnya menghasilkan 2 segitiga yang sama luasnya. Maka luas 1 segitiga = ½ × (a × t).',
+        formulaK: 'K = s₁ + s₂ + s₃',
+        formulaL: 'L = ½ × a × t',
+        exampleQ: 'Segitiga siku-siku memiliki alas a = 6 satuan dan tinggi t = 4 satuan. Tentukan sisi miring, keliling, dan luasnya!',
+        exampleA: 'Sisi miring c = √(6² + 4²) = √52 ≈ 7,21 satuan. Keliling K = 6 + 4 + 7,21 = 17,21 satuan. Luas L = ½ × 6 × 4 = 12 satuan luas.',
+        svg: `<svg viewBox="0 0 260 170" class="w-full h-full">
+          <defs><pattern id="g3" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" stroke="#253B6E" stroke-width="1"/></pattern></defs>
+          <rect width="260" height="170" fill="#080F22"/><rect width="260" height="170" fill="url(#g3)"/>
+          <rect x="60" y="40" width="120" height="80" fill="none" stroke="#64748B" stroke-dasharray="4 3" stroke-width="1.5"/>
+          <polygon points="60,120 180,120 60,40" fill="rgba(0,229,255,0.25)" stroke="#00E5FF" stroke-width="2.5"/>
+          <text x="120" y="135" fill="#FFB703" font-size="11" font-family="monospace" text-anchor="middle">a = 6 satuan</text>
+          <text x="35" y="84" fill="#FFB703" font-size="11" font-family="monospace">t=4</text>
+          <text x="155" y="70" fill="#94A3B8" font-size="10">½ persegi panjang</text>
+        </svg>`
+      },
+      jajar_genjang: {
+        name: '4. Jajar Genjang',
+        shortName: 'Jajar Genjang',
+        basicKeliling: 'Keliling jajar genjang adalah jumlah seluruh keempat sisi tepinya: 2 × (alas + sisi miring). Ingat, tinggi (t) berada di dalam bangun sehingga TIDAK ikut dijumlahkan dalam keliling!',
+        basicLuas: 'Pada grid kotak satuan, jajar genjang memiliki bagian segitiga siku-siku yang menjorok di satu sisi. Kotak-kotak setengah di sisi kiri saling melengkapi dengan kotak setengah di sisi kanan.',
+        proofVisual: 'Potong bagian segitiga siku-siku di sisi kiri jajar genjang, lalu geser ke sisi kanan. Bangun tersebut berubah tepat menjadi Persegi Panjang berukuran alas (a) × tinggi (t)!',
+        formulaK: 'K = 2 × (a + b)',
+        formulaL: 'L = a × t',
+        exampleQ: 'Jajar genjang memiliki alas a = 6 satuan, tinggi t = 4 satuan, dan kemiringan mendatar Δx = 2 satuan. Hitung keliling dan luasnya!',
+        exampleA: 'Sisi miring b = √(2² + 4²) = √20 ≈ 4,47 satuan. Keliling K = 2 × (6 + 4,47) = 20,94 satuan. Luas L = 6 × 4 = 24 satuan luas.',
+        svg: `<svg viewBox="0 0 260 170" class="w-full h-full">
+          <defs><pattern id="g4" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" stroke="#253B6E" stroke-width="1"/></pattern></defs>
+          <rect width="260" height="170" fill="#080F22"/><rect width="260" height="170" fill="url(#g4)"/>
+          <polygon points="80,40 200,40 160,120 40,120" fill="rgba(255,183,3,0.22)" stroke="#FFB703" stroke-width="2.5"/>
+          <line x1="80" y1="40" x2="80" y2="120" stroke="#00E5FF" stroke-width="2" stroke-dasharray="4 3"/>
+          <text x="100" y="135" fill="#FFB703" font-size="11" font-family="monospace" text-anchor="middle">a = 6 satuan</text>
+          <text x="86" y="84" fill="#00E5FF" font-size="11" font-family="monospace">t=4</text>
+        </svg>`
+      },
+      trapesium: {
+        name: '5. Trapesium (Sama Kaki & Siku-siku)',
+        shortName: 'Trapesium',
+        basicKeliling: 'Keliling trapesium adalah jumlah panjang seluruh keempat sisinya: sisi atas (a) + sisi bawah (b) + sisi miring kiri (c) + sisi miring kanan (d).',
+        basicLuas: 'Hitung kotak penuh di bagian tengah dan gabungkan potongan segitiga di tepi kiri-kanan. Jika dua trapesium identik disusun terbalik berdampingan, akan terbentuk jajar genjang dengan alas (a + b) dan tinggi t.',
+        proofVisual: 'Dua trapesium kongruen membentuk jajar genjang seluas (a + b) × t. Karena itu, luas 1 trapesium adalah setengahnya: L = ½ × (a + b) × t.',
+        formulaK: 'K = a + b + c + d',
+        formulaL: 'L = ½ × (a + b) × t',
+        exampleQ: 'Trapesium sama kaki memiliki sisi sejajar a = 4 satuan dan b = 8 satuan, serta tinggi t = 3 satuan. Hitung luasnya!',
+        exampleA: 'Luas L = ½ × (4 + 8) × 3 = ½ × 12 × 3 = 18 satuan luas.',
+        svg: `<svg viewBox="0 0 260 170" class="w-full h-full">
+          <defs><pattern id="g5" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" stroke="#253B6E" stroke-width="1"/></pattern></defs>
+          <rect width="260" height="170" fill="#080F22"/><rect width="260" height="170" fill="url(#g5)"/>
+          <polygon points="80,40 160,40 200,120 40,120" fill="rgba(251,113,133,0.22)" stroke="#FB7185" stroke-width="2.5"/>
+          <line x1="80" y1="40" x2="80" y2="120" stroke="#00E5FF" stroke-width="2" stroke-dasharray="4 3"/>
+          <text x="120" y="32" fill="#FFB703" font-size="11" font-family="monospace" text-anchor="middle">a = 4</text>
+          <text x="120" y="135" fill="#FFB703" font-size="11" font-family="monospace" text-anchor="middle">b = 8</text>
+          <text x="86" y="84" fill="#00E5FF" font-size="11" font-family="monospace">t=4</text>
+        </svg>`
+      },
+      belah_ketupat: {
+        name: '6. Belah Ketupat',
+        shortName: 'Belah Ketupat',
+        basicKeliling: 'Keempat sisi luar belah ketupat memiliki panjang yang sama (s). Pada grid, setiap sisi merupakan sisi miring dari segitiga siku-siku dengan kaki ½d₁ dan ½d₂, sehingga s = √((½d₁)² + (½d₂)²), dan K = 4 × s.',
+        basicLuas: 'Bungkus belah ketupat dengan persegi panjang yang panjangnya d₁ dan lebarnya d₂. Terlihat bahwa belah ketupat terbagi menjadi 4 segitiga siku-siku yang mengisi tepat separuh (½) dari kotak persegi panjang pembungkusnya!',
+        proofVisual: 'Luas persegi panjang pembungkus = d₁ × d₂. Karena belah ketupat menempati tepat setengah bagian di dalamnya, maka L = ½ × d₁ × d₂.',
+        formulaK: 'K = 4 × s',
+        formulaL: 'L = ½ × d₁ × d₂',
+        exampleQ: 'Belah ketupat memiliki diagonal d₁ = 6 satuan dan d₂ = 8 satuan. Tentukan panjang sisi s, keliling, dan luasnya!',
+        exampleA: 'Setengah diagonal adalah 3 dan 4, maka s = √(3² + 4²) = 5 satuan. Keliling K = 4 × 5 = 20 satuan. Luas L = ½ × 6 × 8 = 24 satuan luas.',
+        svg: `<svg viewBox="0 0 260 170" class="w-full h-full">
+          <defs><pattern id="g6" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" stroke="#253B6E" stroke-width="1"/></pattern></defs>
+          <rect width="260" height="170" fill="#080F22"/><rect width="260" height="170" fill="url(#g6)"/>
+          <rect x="60" y="40" width="120" height="80" fill="none" stroke="#64748B" stroke-dasharray="4 3" stroke-width="1.5"/>
+          <polygon points="120,40 180,80 120,120 60,80" fill="rgba(168,85,247,0.25)" stroke="#C084FC" stroke-width="2.5"/>
+          <line x1="60" y1="80" x2="180" y2="80" stroke="#FFB703" stroke-width="1.5" stroke-dasharray="3 3"/>
+          <line x1="120" y1="40" x2="120" y2="120" stroke="#00E5FF" stroke-width="1.5" stroke-dasharray="3 3"/>
+          <text x="120" y="136" fill="#94A3B8" font-size="10" text-anchor="middle">Luas = ½ dari persegi panjang (d₁ × d₂)</text>
+        </svg>`
+      },
+      layang_layang: {
+        name: '7. Layang-layang',
+        shortName: 'Layang-layang',
+        basicKeliling: 'Layang-layang memiliki dua pasang sisi yang sama panjang (2 sisi pendek a dan 2 sisi panjang b). Kelilingnya adalah K = 2 × (a + b).',
+        basicLuas: 'Sama seperti belah ketupat, jika layang-layang dibungkus dalam persegi panjang berukuran d₁ × d₂, keempat bagian segitiga di dalam layang-layang mengisi tepat setengah dari luas persegi panjang pembungkus tersebut.',
+        proofVisual: 'Persegi panjang berukuran d₁ × d₂ terbagi menjadi 4 kuadran di titik potong diagonal. Di setiap kuadran, layang-layang mengisi tepat setengah luasnya, sehingga total L = ½ × d₁ × d₂.',
+        formulaK: 'K = 2 × (a + b)',
+        formulaL: 'L = ½ × d₁ × d₂',
+        exampleQ: 'Sebuah layang-layang memiliki diagonal horizontal d₁ = 6 satuan dan diagonal vertikal d₂ = 8 satuan (terbagi atas 2 satuan & bawah 6 satuan). Hitung luasnya!',
+        exampleA: 'Luas L = ½ × d₁ × d₂ = ½ × 6 × 8 = 24 satuan luas.',
+        svg: `<svg viewBox="0 0 260 170" class="w-full h-full">
+          <defs><pattern id="g7" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" stroke="#253B6E" stroke-width="1"/></pattern></defs>
+          <rect width="260" height="170" fill="#080F22"/><rect width="260" height="170" fill="url(#g7)"/>
+          <rect x="80" y="20" width="80" height="120" fill="none" stroke="#64748B" stroke-dasharray="4 3" stroke-width="1.5"/>
+          <polygon points="120,20 160,60 120,140 80,60" fill="rgba(56,189,248,0.25)" stroke="#38BDF8" stroke-width="2.5"/>
+          <line x1="80" y1="60" x2="160" y2="60" stroke="#FFB703" stroke-width="1.5" stroke-dasharray="3 3"/>
+          <line x1="120" y1="20" x2="120" y2="140" stroke="#00E5FF" stroke-width="1.5" stroke-dasharray="3 3"/>
+          <text x="120" y="156" fill="#94A3B8" font-size="10" text-anchor="middle">Luas = ½ × d₁ × d₂</text>
+        </svg>`
+      }
+    };
+
+    let currentTeoriShape = 'persegi';
+
+    function initTeoriTab() {
+      const tabsWrap = document.getElementById('teori-shape-tabs');
+      tabsWrap.innerHTML = Object.keys(SHAPES_DATA).map(key => `
+        <button onclick="selectTeoriShape('${key}')" id="teori-pill-${key}" class="btn-studio px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+          key === currentTeoriShape
+            ? 'bg-blueprint-cyan text-slate-950 shadow'
+            : 'bg-blueprint-bg text-slate-300 hover:text-white border border-blueprint-border'
+        }">
+          ${SHAPES_DATA[key].shortName}
+        </button>
+      `).join('');
+      selectTeoriShape('persegi', false);
+    }
+
+    function selectTeoriShape(key, sound = true) {
+      currentTeoriShape = key;
+      if (sound) SoundEngine.click();
+
+      Object.keys(SHAPES_DATA).forEach(k => {
+        const btn = document.getElementById(`teori-pill-${k}`);
+        if (btn) {
+          btn.className = k === key
+            ? 'btn-studio px-2.5 py-1 rounded-lg text-xs font-bold bg-blueprint-cyan text-slate-950 shadow'
+            : 'btn-studio px-2.5 py-1 rounded-lg text-xs font-bold bg-blueprint-bg text-slate-300 hover:text-white border border-blueprint-border';
+        }
+      });
+
+      const d = SHAPES_DATA[key];
+      const content = document.getElementById('teori-content-area');
+      content.innerHTML = `
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+          <!-- Kiri: Ilustrasi SVG Grid & Kotak Rumus Formal -->
+          <div class="lg:col-span-5 space-y-4">
+            <div class="bg-blueprint-card border border-blueprint-border rounded-2xl p-3">
+              <div class="text-[11px] font-mono text-cyan-300 mb-2 flex justify-between">
+                <span>VISUALISASI KOTAK SATUAN</span>
+                <span>1 kotak = 1 unit²</span>
+              </div>
+              <div class="w-full h-48 rounded-xl overflow-hidden border border-blueprint-border">
+                ${d.svg}
+              </div>
+            </div>
+
+            <!-- Kotak Rumus Formal Keliling & Luas -->
+            <div class="bg-gradient-to-br from-blueprint-card to-slate-900 border border-cyan-500/40 rounded-2xl p-4 space-y-3">
+              <div class="text-xs font-mono font-bold uppercase tracking-wider text-blueprint-cyan">📌 Rumus Formal ${d.shortName}</div>
+              <div class="grid grid-cols-2 gap-2.5">
+                <div class="bg-blueprint-bg/90 border border-amber-400/40 rounded-xl p-3">
+                  <span class="text-[11px] font-mono text-amber-300 block">Keliling (K)</span>
+                  <span class="font-mono font-bold text-sm sm:text-base text-white mt-0.5 block">${d.formulaK}</span>
+                </div>
+                <div class="bg-blueprint-bg/90 border border-emerald-400/40 rounded-xl p-3">
+                  <span class="text-[11px] font-mono text-emerald-300 block">Luas (L)</span>
+                  <span class="font-mono font-bold text-sm sm:text-base text-white mt-0.5 block">${d.formulaL}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Kanan: Cara Paling Dasar Memahami & Pembuktian Visual -->
+          <div class="lg:col-span-7 space-y-4">
+            <h2 class="text-xl sm:text-2xl font-bold text-white">${d.name}</h2>
+
+            <div class="bg-blueprint-card border border-blueprint-border rounded-2xl p-4 space-y-3">
+              <h3 class="text-sm font-bold text-blueprint-amber flex items-center gap-2">
+                <span>🧱</span><span>Cara Paling Dasar Memahami (Pendekatan Kotak Satuan)</span>
+              </h3>
+              <div class="space-y-2 text-xs sm:text-sm text-slate-200 leading-relaxed">
+                <p><strong class="text-amber-300">1. Konsep Keliling:</strong> ${d.basicKeliling}</p>
+                <p><strong class="text-cyan-300">2. Konsep Luas:</strong> ${d.basicLuas}</p>
+              </div>
+            </div>
+
+            <div class="bg-blueprint-card border border-emerald-500/30 rounded-2xl p-4">
+              <h3 class="text-sm font-bold text-emerald-400 mb-1.5 flex items-center gap-2">
+                <span>✂️</span><span>Pembuktian Visual Rumus Luas</span>
+              </h3>
+              <p class="text-xs sm:text-sm text-slate-200 leading-relaxed">${d.proofVisual}</p>
+            </div>
+
+            <div class="bg-blueprint-bg/90 border border-blueprint-border rounded-2xl p-4">
+              <h3 class="text-xs font-mono font-bold uppercase text-cyan-300 mb-1.5">💡 Contoh Penerapan pada Grid Satuan</h3>
+              <p class="text-xs sm:text-sm text-white font-semibold mb-1">${d.exampleQ}</p>
+              <p class="text-xs sm:text-sm text-emerald-300 font-mono bg-emerald-950/40 border border-emerald-500/30 rounded-xl p-2.5">${d.exampleA}</p>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function jumpToSimWithShape() {
+      switchTab('simulasi');
+      setSimMode('A', false);
+      selectSimAShape(currentTeoriShape);
+    }
+
+    // =========================================================================
+    // 3. SIMULASI MODE A: EKSPLORATOR 7 BANGUN DATAR (GRID SATUAN & ANIMASI)
+    // =========================================================================
+    const simAState = {
+      shape: 'persegi',
+      params: {
+        s: 5,
+        p: 7, l: 4,
+        a: 6, t: 4,
+        slant: 2, // pergeseran horizontal untuk jajar genjang / trapesium
+        topA: 4, botB: 8, // sisi sejajar trapesium
+        d1: 6, d2: 8, d2Top: 2
+      },
+      animMode: 'none', // 'none', 'squares', 'perimeter', 'transform'
+      animProgress: 0,
+      transformFactor: 0,
+      transformTarget: 0,
+      animFrameId: null
+    };
+
+    let canvasA, ctxA;
+    const GRID_A = 28; // 1 kotak = 28px
+
+    function initSimA() {
+      canvasA = document.getElementById('canvas-mode-A');
+      ctxA = canvasA.getContext('2d');
+
+      const listWrap = document.getElementById('simA-shape-list');
+      listWrap.innerHTML = Object.keys(SHAPES_DATA).map(k => `
+        <button onclick="selectSimAShape('${k}')" id="simA-btn-${k}" class="btn-studio text-left px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all">
+          ${SHAPES_DATA[k].shortName}
+        </button>
+      `).join('');
+
+      selectSimAShape('persegi', false);
+    }
+
+    function selectSimAShape(shapeKey, sound = true) {
+      simAState.shape = shapeKey;
+      simAState.animMode = 'none';
+      simAState.transformFactor = 0;
+      simAState.transformTarget = 0;
+      if (sound) SoundEngine.click();
+
+      Object.keys(SHAPES_DATA).forEach(k => {
+        const b = document.getElementById(`simA-btn-${k}`);
+        if (b) {
+          b.className = k === shapeKey
+            ? 'btn-studio text-left px-2.5 py-1.5 rounded-lg text-xs font-bold bg-blueprint-cyan text-slate-950 shadow'
+            : 'btn-studio text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-blueprint-card text-slate-300 hover:text-white border border-blueprint-border';
+        }
+      });
+
+      buildSimASliders();
+      updateSimACalculations();
+      renderCanvasA();
+    }
+
+    function buildSimASliders() {
+      const wrap = document.getElementById('simA-sliders');
+      const s = simAState.shape;
+      const p = simAState.params;
+
+      const sliderHTML = (id, label, min, max, val) => `
+        <div class="bg-blueprint-bg/80 p-2 rounded-xl border border-blueprint-border">
+          <div class="flex justify-between text-xs font-bold mb-1">
+            <span class="text-slate-300">${label}</span>
+            <span class="font-mono text-blueprint-cyan" id="val-${id}">${val} sat</span>
+          </div>
+          <input type="range" min="${min}" max="${max}" step="1" value="${val}" oninput="updateSimAParam('${id}', this.value)" class="w-full">
+        </div>
+      `;
+
+      let html = '';
+      if (s === 'persegi') {
+        html = sliderHTML('s', 'Sisi (s)', 2, 9, p.s);
+      } else if (s === 'persegi_panjang') {
+        html = sliderHTML('p', 'Panjang (p)', 3, 11, p.p) + sliderHTML('l', 'Lebar (l)', 2, 8, p.l);
+      } else if (s === 'segitiga') {
+        html = sliderHTML('a', 'Alas (a)', 3, 10, p.a) + sliderHTML('t', 'Tinggi (t)', 2, 8, p.t);
+      } else if (s === 'jajar_genjang') {
+        html = sliderHTML('a', 'Alas (a)', 4, 9, p.a) + sliderHTML('t', 'Tinggi (t)', 2, 7, p.t) + sliderHTML('slant', 'Geser Miring (Δx)', 1, 4, p.slant);
+      } else if (s === 'trapesium') {
+        html = sliderHTML('topA', 'Sisi Atas (a)', 2, 7, p.topA) + sliderHTML('botB', 'Sisi Bawah (b)', 5, 11, p.botB) + sliderHTML('t', 'Tinggi (t)', 2, 7, p.t);
+      } else if (s === 'belah_ketupat') {
+        html = sliderHTML('d1', 'Diagonal 1 (d₁)', 4, 10, p.d1) + sliderHTML('d2', 'Diagonal 2 (d₂)', 4, 8, p.d2);
+      } else if (s === 'layang_layang') {
+        html = sliderHTML('d1', 'Diagonal Horizontal (d₁)', 4, 10, p.d1) + sliderHTML('d2Top', 'Tinggi Atas', 1, 3, p.d2Top) + sliderHTML('t', 'Tinggi Bawah', 3, 6, p.t);
+      }
+      wrap.innerHTML = html;
+    }
+
+    function updateSimAParam(key, val) {
+      simAState.params[key] = Number(val);
+      const lbl = document.getElementById(`val-${key}`);
+      if (lbl) lbl.textContent = `${val} sat`;
+      SoundEngine.tick(Number(val));
+      updateSimACalculations();
+      renderCanvasA();
+    }
+
+    function getSimAGeometry() {
+      const s = simAState.shape;
+      const p = simAState.params;
+
+      if (s === 'persegi') {
+        const K = 4 * p.s;
+        const L = p.s * p.s;
+        return {
+          verts: [[0,0], [p.s,0], [p.s,p.s], [0,p.s]],
+          K, L,
+          formulaK: 'K = 4 × s',
+          subK: `K = 4 × ${p.s} = ${K} satuan`,
+          formulaL: 'L = s × s',
+          subL: `L = ${p.s} × ${p.s} = ${L} satuan luas`,
+          sidesText: `Keempat sisi = ${p.s} satuan`
+        };
+      } else if (s === 'persegi_panjang') {
+        const K = 2 * (p.p + p.l);
+        const L = p.p * p.l;
+        return {
+          verts: [[0,0], [p.p,0], [p.p,p.l], [0,p.l]],
+          K, L,
+          formulaK: 'K = 2 × (p + l)',
+          subK: `K = 2 × (${p.p} + ${p.l}) = ${K} satuan`,
+          formulaL: 'L = p × l',
+          subL: `L = ${p.p} × ${p.l} = ${L} satuan luas`,
+          sidesText: `p = ${p.p} sat, l = ${p.l} sat`
+        };
+      } else if (s === 'segitiga') {
+        const hyp = Math.hypot(p.a, p.t);
+        const K = p.a + p.t + hyp;
+        const L = 0.5 * p.a * p.t;
+        return {
+          verts: [[0, p.t], [p.a, p.t], [0, 0]],
+          K, L,
+          formulaK: 'K = a + t + c (Pythagoras)',
+          subK: `c = √(${p.a}²+${p.t}²) = ${hyp.toFixed(2)}\nK = ${p.a} + ${p.t} + ${hyp.toFixed(2)} = ${K.toFixed(2)} sat`,
+          formulaL: 'L = ½ × a × t',
+          subL: `L = ½ × ${p.a} × ${p.t} = ${L} satuan luas`,
+          sidesText: `a = ${p.a}, t = ${p.t}, c ≈ ${hyp.toFixed(2)}`
+        };
+      } else if (s === 'jajar_genjang') {
+        const sideMiring = Math.hypot(p.slant, p.t);
+        const K = 2 * (p.a + sideMiring);
+        const L = p.a * p.t;
+        return {
+          verts: [[p.slant, 0], [p.slant + p.a, 0], [p.a, p.t], [0, p.t]],
+          K, L,
+          formulaK: 'K = 2 × (a + b)',
+          subK: `b = √(${p.slant}²+${p.t}²) = ${sideMiring.toFixed(2)}\nK = 2 × (${p.a} + ${sideMiring.toFixed(2)}) = ${K.toFixed(2)} sat`,
+          formulaL: 'L = a × t',
+          subL: `L = ${p.a} × ${p.t} = ${L} satuan luas`,
+          sidesText: `a = ${p.a}, b ≈ ${sideMiring.toFixed(2)}, t = ${p.t}`
+        };
+      } else if (s === 'trapesium') {
+        const a = Math.min(p.topA, p.botB - 1);
+        const b = p.botB;
+        const dx = (b - a) / 2;
+        const leg = Math.hypot(dx, p.t);
+        const K = a + b + 2 * leg;
+        const L = 0.5 * (a + b) * p.t;
+        return {
+          verts: [[dx, 0], [dx + a, 0], [b, p.t], [0, p.t]],
+          K, L,
+          formulaK: 'K = a + b + 2c',
+          subK: `c = √(${dx}²+${p.t}²) = ${leg.toFixed(2)}\nK = ${a} + ${b} + 2(${leg.toFixed(2)}) = ${K.toFixed(2)} sat`,
+          formulaL: 'L = ½ × (a + b) × t',
+          subL: `L = ½ × (${a} + ${b}) × ${p.t} = ${L} satuan luas`,
+          sidesText: `a = ${a}, b = ${b}, c ≈ ${leg.toFixed(2)}`
+        };
+      } else if (s === 'belah_ketupat') {
+        const hx = p.d1 / 2;
+        const hy = p.d2 / 2;
+        const side = Math.hypot(hx, hy);
+        const K = 4 * side;
+        const L = 0.5 * p.d1 * p.d2;
+        return {
+          verts: [[hx, 0], [p.d1, hy], [hx, p.d2], [0, hy]],
+          K, L,
+          formulaK: 'K = 4 × s',
+          subK: `s = √(${hx}²+${hy}²) = ${side.toFixed(2)}\nK = 4 × ${side.toFixed(2)} = ${K.toFixed(2)} sat`,
+          formulaL: 'L = ½ × d₁ × d₂',
+          subL: `L = ½ × ${p.d1} × ${p.d2} = ${L} satuan luas`,
+          sidesText: `d₁ = ${p.d1}, d₂ = ${p.d2}, s ≈ ${side.toFixed(2)}`
+        };
+      } else {
+        // layang_layang
+        const hx = p.d1 / 2;
+        const topH = p.d2Top;
+        const botH = p.t;
+        const d2Total = topH + botH;
+        const sTop = Math.hypot(hx, topH);
+        const sBot = Math.hypot(hx, botH);
+        const K = 2 * (sTop + sBot);
+        const L = 0.5 * p.d1 * d2Total;
+        return {
+          verts: [[hx, 0], [p.d1, topH], [hx, d2Total], [0, topH]],
+          K, L,
+          formulaK: 'K = 2 × (a + b)',
+          subK: `a = ${sTop.toFixed(2)}, b = ${sBot.toFixed(2)}\nK = 2 × (${sTop.toFixed(2)} + ${sBot.toFixed(2)}) = ${K.toFixed(2)} sat`,
+          formulaL: 'L = ½ × d₁ × d₂',
+          subL: `L = ½ × ${p.d1} × ${d2Total} = ${L} satuan luas`,
+          sidesText: `d₁ = ${p.d1}, d₂ = ${d2Total}`
+        };
+      }
+    }
+
+    function updateSimACalculations() {
+      const geo = getSimAGeometry();
+      const panel = document.getElementById('simA-calc-panel');
+      panel.innerHTML = `
+        <div class="bg-blueprint-card border border-blueprint-border rounded-xl p-3">
+          <span class="text-[11px] font-mono uppercase text-slate-400 block">Dimensi Terukur</span>
+          <span class="text-xs font-bold text-white mt-0.5 block">${geo.sidesText}</span>
+        </div>
+
+        <div class="bg-blueprint-card border border-amber-400/40 rounded-xl p-3 space-y-1">
+          <span class="text-[11px] font-mono font-bold uppercase text-amber-300 block">📏 Perhitungan Keliling</span>
+          <div class="font-mono text-xs text-slate-300">${geo.formulaK}</div>
+          <pre class="font-mono text-xs text-white whitespace-pre-wrap bg-blueprint-bg/80 p-2 rounded-lg border border-blueprint-border">${geo.subK}</pre>
+          <div class="text-right font-mono font-bold text-sm text-amber-400">K = ${Number(geo.K.toFixed(2))} sat</div>
+        </div>
+
+        <div class="bg-blueprint-card border border-emerald-400/40 rounded-xl p-3 space-y-1">
+          <span class="text-[11px] font-mono font-bold uppercase text-emerald-300 block">🧱 Perhitungan Luas</span>
+          <div class="font-mono text-xs text-slate-300">${geo.formulaL}</div>
+          <div class="font-mono text-xs text-white bg-blueprint-bg/80 p-2 rounded-lg border border-blueprint-border">${geo.subL}</div>
+          <div class="text-right font-mono font-bold text-sm text-emerald-400">L = ${Number(geo.L.toFixed(2))} sat²</div>
+        </div>
+      `;
+    }
+
+    function startCountSquaresAnim() {
+      SoundEngine.click();
+      simAState.animMode = 'squares';
+      simAState.animProgress = 0;
+      simAState.transformFactor = 0;
+      simAState.transformTarget = 0;
+      document.getElementById('simA-status-text').textContent = 'Menghitung kotak-kotak satuan (1×1) di dalam bidang...';
+
+      cancelAnimationFrame(simAState.animFrameId);
+      let lastTick = 0;
+      const step = (ts) => {
+        if (ts - lastTick > 45) {
+          lastTick = ts;
+          simAState.animProgress++;
+          SoundEngine.tick(simAState.animProgress);
+          renderCanvasA();
+        }
+        if (simAState.animMode === 'squares' && simAState.animProgress < 120) {
+          simAState.animFrameId = requestAnimationFrame(step);
+        }
+      };
+      simAState.animFrameId = requestAnimationFrame(step);
+    }
+
+    function startPerimeterAnim() {
+      SoundEngine.click();
+      simAState.animMode = 'perimeter';
+      simAState.animProgress = 0;
+      simAState.transformFactor = 0;
+      simAState.transformTarget = 0;
+      document.getElementById('simA-status-text').textContent = 'Menelusuri panjang lintasan pagar terluar (Keliling)...';
+
+      cancelAnimationFrame(simAState.animFrameId);
+      let lastTick = 0;
+      const step = (ts) => {
+        simAState.animProgress += 0.015;
+        if (ts - lastTick > 90) {
+          lastTick = ts;
+          SoundEngine.tick(Math.floor(simAState.animProgress * 20));
+        }
+        renderCanvasA();
+        if (simAState.animMode === 'perimeter' && simAState.animProgress < 1) {
+          simAState.animFrameId = requestAnimationFrame(step);
+        } else {
+          simAState.animProgress = 1;
+          renderCanvasA();
+          SoundEngine.fanfare();
+        }
+      };
+      simAState.animFrameId = requestAnimationFrame(step);
+    }
+
+    function toggleTransformAnim() {
+      SoundEngine.click();
+      simAState.animMode = 'transform';
+      simAState.transformTarget = simAState.transformTarget === 0 ? 1 : 0;
+      document.getElementById('simA-status-text').textContent = simAState.transformTarget === 1
+        ? 'Bukti Visual: Memotong & menyusun ulang bagian bangun menjadi Persegi Panjang!'
+        : 'Mengembalikan bentuk bangun ke posisi semula...';
+
+      cancelAnimationFrame(simAState.animFrameId);
+      const step = () => {
+        const diff = simAState.transformTarget - simAState.transformFactor;
+        if (Math.abs(diff) > 0.01) {
+          simAState.transformFactor += diff * 0.1;
+          renderCanvasA();
+          simAState.animFrameId = requestAnimationFrame(step);
+        } else {
+          simAState.transformFactor = simAState.transformTarget;
+          renderCanvasA();
+          SoundEngine.fanfare();
+        }
+      };
+      simAState.animFrameId = requestAnimationFrame(step);
+    }
+
+    function resetSimA() {
+      SoundEngine.sweep();
+      simAState.animMode = 'none';
+      simAState.transformFactor = 0;
+      simAState.transformTarget = 0;
+      document.getElementById('simA-status-text').textContent = 'Parameter dan animasi telah direset.';
+      document.getElementById('simA-anim-counter').textContent = '';
+      renderCanvasA();
+    }
+
+    function resizeCanvasA() {
+      if (!canvasA) return;
+      const wrap = document.getElementById('canvasA-wrap');
+      const r = wrap.getBoundingClientRect();
+      if (r.width > 0 && r.height > 0) {
+        canvasA.width = r.width;
+        canvasA.height = r.height;
+        renderCanvasA();
+      }
+    }
+
+    function renderCanvasA() {
+      if (!ctxA || !canvasA) return;
+      const w = canvasA.width;
+      const h = canvasA.height;
+      ctxA.clearRect(0, 0, w, h);
+
+      // Gambar Grid Kotak Satuan
+      const ox = Math.floor((w / 2) / GRID_A) * GRID_A - 4 * GRID_A;
+      const oy = Math.floor((h / 2) / GRID_A) * GRID_A - 4 * GRID_A;
+
+      ctxA.strokeStyle = 'rgba(37, 59, 110, 0.55)';
+      ctxA.lineWidth = 1;
+      for (let x = ox % GRID_A; x < w; x += GRID_A) {
+        ctxA.beginPath(); ctxA.moveTo(x, 0); ctxA.lineTo(x, h); ctxA.stroke();
+      }
+      for (let y = oy % GRID_A; y < h; y += GRID_A) {
+        ctxA.beginPath(); ctxA.moveTo(0, y); ctxA.lineTo(w, y); ctxA.stroke();
+      }
+
+      const geo = getSimAGeometry();
+      const s = simAState.shape;
+      const p = simAState.params;
+      const tf = simAState.transformFactor;
+
+      ctxA.save();
+      ctxA.translate(ox, oy);
+
+      // Render khusus Bukti Visual Transformasi ke Persegi Panjang
+      if (simAState.animMode === 'transform' && tf > 0.01) {
+        renderVisualProofA(s, p, tf);
+      } else {
+        // Gambar poligon utama
+        ctxA.beginPath();
+        geo.verts.forEach(([vx, vy], idx) => {
+          idx === 0 ? ctxA.moveTo(vx * GRID_A, vy * GRID_A) : ctxA.lineTo(vx * GRID_A, vy * GRID_A);
+        });
+        ctxA.closePath();
+        ctxA.fillStyle = 'rgba(0, 229, 255, 0.2)';
+        ctxA.fill();
+        ctxA.strokeStyle = '#00E5FF';
+        ctxA.lineWidth = 2.5;
+        ctxA.stroke();
+
+        // Animasi Hitung Kotak Satuan
+        if (simAState.animMode === 'squares') {
+          let count = 0;
+          let fullCount = 0;
+          let halfCount = 0;
+          for (let gy = 0; gy < 12; gy++) {
+            for (let gx = 0; gx < 14; gx++) {
+              const cx = gx + 0.5;
+              const cy = gy + 0.5;
+              if (pointInPoly([cx, cy], geo.verts)) {
+                count++;
+                if (count <= simAState.animProgress) {
+                  // Cek apakah 4 sudut kotak masuk poligon (kotak penuh vs potongan)
+                  const cornersIn = [
+                    pointInPoly([gx + 0.05, gy + 0.05], geo.verts),
+                    pointInPoly([gx + 0.95, gy + 0.05], geo.verts),
+                    pointInPoly([gx + 0.95, gy + 0.95], geo.verts),
+                    pointInPoly([gx + 0.05, gy + 0.95], geo.verts)
+                  ].filter(Boolean).length;
+
+                  if (cornersIn === 4) {
+                    fullCount++;
+                    ctxA.fillStyle = 'rgba(16, 185, 129, 0.45)';
+                    ctxA.fillRect(gx * GRID_A + 2, gy * GRID_A + 2, GRID_A - 4, GRID_A - 4);
+                    ctxA.fillStyle = '#FFFFFF';
+                    ctxA.font = 'bold 10px JetBrains Mono';
+                    ctxA.textAlign = 'center';
+                    ctxA.fillText(fullCount, (gx + 0.5) * GRID_A, (gy + 0.62) * GRID_A);
+                  } else {
+                    halfCount++;
+                    ctxA.fillStyle = 'rgba(255, 183, 3, 0.45)';
+                    ctxA.fillRect(gx * GRID_A + 3, gy * GRID_A + 3, GRID_A - 6, GRID_A - 6);
+                  }
+                }
+              }
+            }
+          }
+          document.getElementById('simA-anim-counter').textContent = `Luas = ${geo.L} sat²`;
+        }
+
+        // Animasi Telusuri Keliling
+        if (simAState.animMode === 'perimeter') {
+          const verts = geo.verts;
+          let totalLen = 0;
+          const segs = [];
+          for (let i = 0; i < verts.length; i++) {
+            const v1 = verts[i];
+            const v2 = verts[(i + 1) % verts.length];
+            const len = Math.hypot(v2[0] - v1[0], v2[1] - v1[1]);
+            segs.push({ v1, v2, len });
+            totalLen += len;
+          }
+
+          let targetDist = simAState.animProgress * totalLen;
+          let drawnDist = 0;
+          ctxA.strokeStyle = '#FFB703';
+          ctxA.lineWidth = 4.5;
+          ctxA.beginPath();
+          for (let seg of segs) {
+            if (drawnDist >= targetDist) break;
+            const rem = targetDist - drawnDist;
+            const ratio = Math.min(1, rem / seg.len);
+            const ex = seg.v1[0] + (seg.v2[0] - seg.v1[0]) * ratio;
+            const ey = seg.v1[1] + (seg.v2[1] - seg.v1[1]) * ratio;
+            ctxA.moveTo(seg.v1[0] * GRID_A, seg.v1[1] * GRID_A);
+            ctxA.lineTo(ex * GRID_A, ey * GRID_A);
+            drawnDist += seg.len;
+          }
+          ctxA.stroke();
+          document.getElementById('simA-anim-counter').textContent = `K ≈ ${targetDist.toFixed(2)} sat`;
+        }
+
+        // Titik sudut
+        geo.verts.forEach(([vx, vy]) => {
+          ctxA.fillStyle = '#FFB703';
+          ctxA.beginPath();
+          ctxA.arc(vx * GRID_A, vy * GRID_A, 4.5, 0, Math.PI * 2);
+          ctxA.fill();
+        });
+      }
+
+      ctxA.restore();
+    }
+
+    function renderVisualProofA(s, p, tf) {
+      // Visualisasi dekomposisi tiap bangun menjadi persegi panjang
+      if (s === 'jajar_genjang') {
+        // Bagian utama trapesium siku-siku diam, segitiga kiri digeser ke kanan sejauh p.a * GRID_A
+        ctxA.fillStyle = 'rgba(0, 229, 255, 0.25)';
+        ctxA.strokeStyle = '#00E5FF';
+        ctxA.lineWidth = 2;
+        ctxA.beginPath();
+        ctxA.moveTo(p.slant * GRID_A, 0);
+        ctxA.lineTo((p.slant + p.a) * GRID_A, 0);
+        ctxA.lineTo(p.a * GRID_A, p.t * GRID_A);
+        ctxA.lineTo(p.slant * GRID_A, p.t * GRID_A);
+        ctxA.closePath();
+        ctxA.fill(); ctxA.stroke();
+
+        // Segitiga potongan yang digeser ke kanan
+        const shiftX = tf * p.a * GRID_A;
+        ctxA.fillStyle = 'rgba(255, 183, 3, 0.45)';
+        ctxA.strokeStyle = '#FFB703';
+        ctxA.beginPath();
+        ctxA.moveTo(p.slant * GRID_A + shiftX, 0);
+        ctxA.lineTo(p.slant * GRID_A + shiftX, p.t * GRID_A);
+        ctxA.lineTo(0 + shiftX, p.t * GRID_A);
+        ctxA.closePath();
+        ctxA.fill(); ctxA.stroke();
+      } else if (s === 'segitiga') {
+        // Segitiga asli + segitiga kembaran berputar membentuk persegi panjang a x t
+        ctxA.fillStyle = 'rgba(0, 229, 255, 0.28)';
+        ctxA.strokeStyle = '#00E5FF';
+        ctxA.lineWidth = 2;
+        ctxA.beginPath();
+        ctxA.moveTo(0, 0); ctxA.lineTo(p.a * GRID_A, p.t * GRID_A); ctxA.lineTo(0, p.t * GRID_A); ctxA.closePath();
+        ctxA.fill(); ctxA.stroke();
+
+        ctxA.save();
+        ctxA.globalAlpha = tf;
+        ctxA.fillStyle = 'rgba(16, 185, 129, 0.35)';
+        ctxA.strokeStyle = '#10B981';
+        ctxA.beginPath();
+        ctxA.moveTo(0, 0); ctxA.lineTo(p.a * GRID_A, 0); ctxA.lineTo(p.a * GRID_A, p.t * GRID_A); ctxA.closePath();
+        ctxA.fill(); ctxA.stroke();
+        ctxA.restore();
+      } else if (s === 'trapesium') {
+        const a = Math.min(p.topA, p.botB - 1);
+        const b = p.botB;
+        const dx = (b - a) / 2;
+        // Badan tengah
+        ctxA.fillStyle = 'rgba(0, 229, 255, 0.25)';
+        ctxA.strokeStyle = '#00E5FF';
+        ctxA.lineWidth = 2;
+        ctxA.beginPath();
+        ctxA.moveTo(dx * GRID_A, 0); ctxA.lineTo((dx + a) * GRID_A, 0);
+        ctxA.lineTo((dx + a) * GRID_A, p.t * GRID_A); ctxA.lineTo(dx * GRID_A, p.t * GRID_A);
+        ctxA.closePath(); ctxA.fill(); ctxA.stroke();
+
+        // Potongan atas segitiga kiri & kanan dilipat ke atas membentuk persegi panjang lebar (a+b)/2
+        ctxA.fillStyle = 'rgba(251, 113, 133, 0.45)';
+        ctxA.strokeStyle = '#FB7185';
+        // Kiri
+        ctxA.beginPath();
+        ctxA.moveTo(dx * GRID_A, 0); ctxA.lineTo(dx * GRID_A, p.t * GRID_A); ctxA.lineTo(0, p.t * GRID_A);
+        ctxA.closePath(); ctxA.fill(); ctxA.stroke();
+        // Kanan
+        ctxA.beginPath();
+        ctxA.moveTo((dx + a) * GRID_A, 0); ctxA.lineTo(b * GRID_A, p.t * GRID_A); ctxA.lineTo((dx + a) * GRID_A, p.t * GRID_A);
+        ctxA.closePath(); ctxA.fill(); ctxA.stroke();
+
+        // Garis persegi panjang rata-rata ½(a+b) × t
+        ctxA.strokeStyle = '#FFB703';
+        ctxA.setLineDash([5, 4]);
+        ctxA.strokeRect((dx / 2) * GRID_A, 0, ((a + b) / 2) * GRID_A, p.t * GRID_A);
+        ctxA.setLineDash([]);
+      } else if (s === 'belah_ketupat' || s === 'layang_layang') {
+        const geo = getSimAGeometry();
+        const maxX = Math.max(...geo.verts.map(v => v[0]));
+        const maxY = Math.max(...geo.verts.map(v => v[1]));
+        // Kotak pembungkus d1 x d2
+        ctxA.strokeStyle = '#FFB703';
+        ctxA.lineWidth = 2.5;
+        ctxA.setLineDash([5, 4]);
+        ctxA.strokeRect(0, 0, maxX * GRID_A, maxY * GRID_A);
+        ctxA.setLineDash([]);
+
+        ctxA.fillStyle = 'rgba(0, 229, 255, 0.28)';
+        ctxA.strokeStyle = '#00E5FF';
+        ctxA.beginPath();
+        geo.verts.forEach(([vx, vy], i) => i === 0 ? ctxA.moveTo(vx * GRID_A, vy * GRID_A) : ctxA.lineTo(vx * GRID_A, vy * GRID_A));
+        ctxA.closePath(); ctxA.fill(); ctxA.stroke();
+      } else {
+        // Persegi / Persegi panjang sudah berbentuk persegi panjang standar
+        const geo = getSimAGeometry();
+        ctxA.fillStyle = 'rgba(16, 185, 129, 0.35)';
+        ctxA.strokeStyle = '#10B981';
+        ctxA.lineWidth = 3;
+        ctxA.beginPath();
+        geo.verts.forEach(([vx, vy], i) => i === 0 ? ctxA.moveTo(vx * GRID_A, vy * GRID_A) : ctxA.lineTo(vx * GRID_A, vy * GRID_A));
+        ctxA.closePath(); ctxA.fill(); ctxA.stroke();
+      }
+      document.getElementById('simA-anim-counter').textContent = `Luas tetap = ${getSimAGeometry().L} sat²`;
+    }
+
+    function pointInPoly(pt, vs) {
+      const x = pt[0], y = pt[1];
+      let inside = false;
+      for (let i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+        const xi = vs[i][0], yi = vs[i][1];
+        const xj = vs[j][0], yj = vs[j][1];
+        const intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi + 1e-9) + xi);
+        if (intersect) inside = !inside;
+      }
+      return inside;
+    }
+
+    // =========================================================================
+    // 4. SIMULASI MODE B: KANVAS GAMBAR BEBAS KOTAK-KOTAK (GEO-GRID DRAWER)
+    // =========================================================================
+    const simBState = {
+      tool: 'draw', // 'draw' atau 'drag'
+      vertices: [], // Array koordinat grid [{gx, gy}, ...]
+      isClosed: false,
+      hoverGrid: null,
+      draggingIdx: -1
+    };
+
+    let canvasB, ctxB;
+    const GRID_B = 26;
+
+    function initSimB() {
+      canvasB = document.getElementById('canvas-mode-B');
+      ctxB = canvasB.getContext('2d');
+      attachCanvasBEvents();
+      loadPresetToCanvasB('trapesium', false);
+    }
+
+    function resizeCanvasB() {
+      if (!canvasB) return;
+      const wrap = document.getElementById('canvasB-wrap');
+      const r = wrap.getBoundingClientRect();
+      if (r.width > 0 && r.height > 0) {
+        canvasB.width = r.width;
+        canvasB.height = r.height;
+        renderCanvasB();
+      }
+    }
+
+    function setDrawTool(t) {
+      SoundEngine.click();
+      simBState.tool = t;
+      document.getElementById('tool-btn-draw').className = t === 'draw'
+        ? 'btn-studio w-full text-left px-3 py-2 rounded-xl text-xs font-bold bg-blueprint-cyan text-slate-950 flex items-center gap-2'
+        : 'btn-studio w-full text-left px-3 py-2 rounded-xl text-xs font-bold bg-blueprint-card text-slate-300 border border-blueprint-border flex items-center gap-2';
+      document.getElementById('tool-btn-drag').className = t === 'drag'
+        ? 'btn-studio w-full text-left px-3 py-2 rounded-xl text-xs font-bold bg-blueprint-amber text-slate-950 flex items-center gap-2'
+        : 'btn-studio w-full text-left px-3 py-2 rounded-xl text-xs font-bold bg-blueprint-card text-slate-300 border border-blueprint-border flex items-center gap-2';
+      canvasB.style.cursor = t === 'draw' ? 'crosshair' : 'grab';
+    }
+
+    function loadPresetToCanvasB(preset, sound = true) {
+      if (sound) SoundEngine.click();
+      const presets = {
+        persegi: [{gx:4,gy:3},{gx:9,gy:3},{gx:9,gy:8},{gx:4,gy:8}],
+        persegi_panjang: [{gx:3,gy:3},{gx:11,gy:3},{gx:11,gy:7},{gx:3,gy:7}],
+        segitiga: [{gx:4,gy:8},{gx:11,gy:8},{gx:7,gy:3}],
+        jajar_genjang: [{gx:5,gy:3},{gx:11,gy:3},{gx:9,gy:8},{gx:3,gy:8}],
+        trapesium: [{gx:5,gy:3},{gx:9,gy:3},{gx:11,gy:8},{gx:3,gy:8}],
+        belah_ketupat: [{gx:7,gy:2},{gx:11,gy:5},{gx:7,gy:8},{gx:3,gy:5}],
+        layang_layang: [{gx:7,gy:2},{gx:10,gy:4},{gx:7,gy:9},{gx:4,gy:4}]
+      };
+      simBState.vertices = presets[preset] || presets.persegi;
+      simBState.isClosed = true;
+      setDrawTool('drag');
+      renderCanvasB();
+      updateSimBAnalysis();
+    }
+
+    function undoVertexB() {
+      SoundEngine.click();
+      if (simBState.isClosed) {
+        simBState.isClosed = false;
+      } else {
+        simBState.vertices.pop();
+      }
+      renderCanvasB();
+      updateSimBAnalysis();
+    }
+
+    function resetCanvasB() {
+      SoundEngine.sweep();
+      simBState.vertices = [];
+      simBState.isClosed = false;
+      setDrawTool('draw');
+      renderCanvasB();
+      updateSimBAnalysis();
+      showToast('Kanvas gambar kotak-kotak dikosongkan', '🧹');
+    }
+
+    function downloadCanvasB() {
+      if (!canvasB) return;
+      SoundEngine.fanfare();
+      const link = document.createElement('a');
+      link.download = 'Konstruksi_Bangun_Datar_GeoGrid.png';
+      link.href = canvasB.toDataURL('image/png');
+      link.click();
+      showToast('Gambar kanvas diunduh (PNG)', '💾');
+    }
+
+    function attachCanvasBEvents() {
+      const toGrid = (e) => {
+        const rect = canvasB.getBoundingClientRect();
+        const cx = e.touches ? e.touches[0].clientX : e.clientX;
+        const cy = e.touches ? e.touches[0].clientY : e.clientY;
+        const px = cx - rect.left;
+        const py = cy - rect.top;
+        return {
+          gx: Math.max(1, Math.round(px / GRID_B)),
+          gy: Math.max(1, Math.round(py / GRID_B)),
+          px, py
+        };
+      };
+
+      canvasB.addEventListener('mousemove', (e) => {
+        const { gx, gy } = toGrid(e);
+        simBState.hoverGrid = { gx, gy };
+        document.getElementById('canvasB-coord-readout').textContent = `Koordinat: (${gx}, ${gy})`;
+
+        if (simBState.draggingIdx >= 0) {
+          simBState.vertices[simBState.draggingIdx] = { gx, gy };
+          updateSimBAnalysis();
+        }
+        renderCanvasB();
+      });
+
+      canvasB.addEventListener('mousedown', (e) => {
+        const { gx, gy, px, py } = toGrid(e);
+
+        if (simBState.tool === 'drag' || simBState.isClosed) {
+          // Cari titik sudut terdekat untuk digeser
+          const idx = simBState.vertices.findIndex(v => Math.hypot(v.gx * GRID_B - px, v.gy * GRID_B - py) < 16);
+          if (idx >= 0) {
+            simBState.draggingIdx = idx;
+            SoundEngine.click();
+            return;
+          }
+        }
+
+        if (simBState.tool === 'draw') {
+          if (simBState.isClosed) {
+            // Mulai poligon baru
+            simBState.vertices = [{ gx, gy }];
+            simBState.isClosed = false;
+            SoundEngine.tick(1);
+          } else {
+            // Cek apakah mengklik titik pertama untuk menutup poligon (minimal 3 titik)
+            if (simBState.vertices.length >= 3) {
+              const first = simBState.vertices[0];
+              if (first.gx === gx && first.gy === gy) {
+                simBState.isClosed = true;
+                SoundEngine.fanfare();
+                showToast('Poligon tertutup! Keliling & Luas dihitung otomatis.', '📐');
+                renderCanvasB();
+                updateSimBAnalysis();
+                return;
+              }
+            }
+            // Tambah titik baru jika belum ada di posisi yang sama
+            const exists = simBState.vertices.some(v => v.gx === gx && v.gy === gy);
+            if (!exists) {
+              simBState.vertices.push({ gx, gy });
+              SoundEngine.tick(simBState.vertices.length);
+            }
+          }
+          renderCanvasB();
+          updateSimBAnalysis();
+        }
+      });
+
+      window.addEventListener('mouseup', () => {
+        simBState.draggingIdx = -1;
+      });
+    }
+
+    function renderCanvasB() {
+      if (!ctxB || !canvasB) return;
+      const w = canvasB.width;
+      const h = canvasB.height;
+      ctxB.clearRect(0, 0, w, h);
+
+      // Gambar Grid Kotak-kotak
+      ctxB.strokeStyle = 'rgba(37, 59, 110, 0.65)';
+      ctxB.lineWidth = 1;
+      for (let x = 0; x < w; x += GRID_B) {
+        ctxB.beginPath(); ctxB.moveTo(x, 0); ctxB.lineTo(x, h); ctxB.stroke();
+      }
+      for (let y = 0; y < h; y += GRID_B) {
+        ctxB.beginPath(); ctxB.moveTo(0, y); ctxB.lineTo(w, y); ctxB.stroke();
+      }
+
+      const verts = simBState.vertices;
+      const showCells = document.getElementById('chk-show-unit-cells')?.checked;
+      const showLabels = document.getElementById('chk-show-side-labels')?.checked;
+
+      // Arsir kotak satuan di dalam poligon tertutup
+      if (simBState.isClosed && verts.length >= 3 && showCells) {
+        const polyPts = verts.map(v => [v.gx, v.gy]);
+        const maxGx = Math.ceil(w / GRID_B);
+        const maxGy = Math.ceil(h / GRID_B);
+        for (let gy = 0; gy < maxGy; gy++) {
+          for (let gx = 0; gx < maxGx; gx++) {
+            if (pointInPoly([gx + 0.5, gy + 0.5], polyPts)) {
+              ctxB.fillStyle = 'rgba(16, 185, 129, 0.25)';
+              ctxB.fillRect(gx * GRID_B + 2, gy * GRID_B + 2, GRID_B - 4, GRID_B - 4);
+            }
+          }
+        }
+      }
+
+      // Gambar sisi-sisi poligon
+      if (verts.length > 0) {
+        ctxB.beginPath();
+        verts.forEach((v, i) => {
+          i === 0 ? ctxB.moveTo(v.gx * GRID_B, v.gy * GRID_B) : ctxB.lineTo(v.gx * GRID_B, v.gy * GRID_B);
+        });
+        if (simBState.isClosed) {
+          ctxB.closePath();
+          ctxB.fillStyle = 'rgba(0, 229, 255, 0.14)';
+          ctxB.fill();
+        }
+        ctxB.strokeStyle = '#00E5FF';
+        ctxB.lineWidth = 2.5;
+        ctxB.stroke();
+
+        // Garis pratinjau menuju kursor saat sedang menggambar
+        if (!simBState.isClosed && simBState.tool === 'draw' && simBState.hoverGrid) {
+          const last = verts[verts.length - 1];
+          ctxB.save();
+          ctxB.strokeStyle = '#FFB703';
+          ctxB.setLineDash([4, 4]);
+          ctxB.beginPath();
+          ctxB.moveTo(last.gx * GRID_B, last.gy * GRID_B);
+          ctxB.lineTo(simBState.hoverGrid.gx * GRID_B, simBState.hoverGrid.gy * GRID_B);
+          ctxB.stroke();
+          ctxB.restore();
+        }
+
+        // Label panjang tiap sisi
+        if (showLabels && verts.length >= 2) {
+          const limit = simBState.isClosed ? verts.length : verts.length - 1;
+          for (let i = 0; i < limit; i++) {
+            const v1 = verts[i];
+            const v2 = verts[(i + 1) % verts.length];
+            const len = Math.hypot(v2.gx - v1.gx, v2.gy - v1.gy);
+            const mx = ((v1.gx + v2.gx) / 2) * GRID_B;
+            const my = ((v1.gy + v2.gy) / 2) * GRID_B;
+            ctxB.fillStyle = '#0B132B';
+            ctxB.fillRect(mx - 18, my - 9, 36, 16);
+            ctxB.fillStyle = '#FFB703';
+            ctxB.font = 'bold 10px JetBrains Mono';
+            ctxB.textAlign = 'center';
+            ctxB.fillText(Number(len.toFixed(2)), mx, my + 3);
+          }
+        }
+
+        // Gambar titik sudut
+        verts.forEach((v, idx) => {
+          ctxB.fillStyle = idx === 0 ? '#FFB703' : '#00E5FF';
+          ctxB.beginPath();
+          ctxB.arc(v.gx * GRID_B, v.gy * GRID_B, idx === 0 ? 6 : 5, 0, Math.PI * 2);
+          ctxB.fill();
+          ctxB.strokeStyle = '#0B132B';
+          ctxB.lineWidth = 1.5;
+          ctxB.stroke();
+        });
+      }
+
+      // Titik snap hover
+      if (simBState.hoverGrid) {
+        ctxB.strokeStyle = 'rgba(255, 183, 3, 0.8)';
+        ctxB.lineWidth = 1.5;
+        ctxB.beginPath();
+        ctxB.arc(simBState.hoverGrid.gx * GRID_B, simBState.hoverGrid.gy * GRID_B, 6, 0, Math.PI * 2);
+        ctxB.stroke();
+      }
+    }
+
+    function detectPolygonName(verts) {
+      const n = verts.length;
+      if (n === 3) return 'Segitiga';
+      if (n !== 4) return `Poligon ${n}-Sisi`;
+
+      const sides = [];
+      for (let i = 0; i < 4; i++) {
+        const a = verts[i], b = verts[(i + 1) % 4];
+        sides.push(Math.hypot(b.gx - a.gx, b.gy - a.gy));
+      }
+      const d1 = Math.hypot(verts[2].gx - verts[0].gx, verts[2].gy - verts[0].gy);
+      const d2 = Math.hypot(verts[3].gx - verts[1].gx, verts[3].gy - verts[1].gy);
+
+      const eq = (x, y) => Math.abs(x - y) < 1e-4;
+      const allSidesEq = eq(sides[0], sides[1]) && eq(sides[1], sides[2]) && eq(sides[2], sides[3]);
+      const oppSidesEq = eq(sides[0], sides[2]) && eq(sides[1], sides[3]);
+      const diagEq = eq(d1, d2);
+
+      if (allSidesEq && diagEq) return 'Persegi';
+      if (oppSidesEq && diagEq) return 'Persegi Panjang';
+      if (allSidesEq) return 'Belah Ketupat';
+      if (oppSidesEq) return 'Jajar Genjang';
+      if ((eq(sides[0], sides[1]) && eq(sides[2], sides[3])) || (eq(sides[1], sides[2]) && eq(sides[3], sides[0]))) {
+        return 'Layang-layang';
+      }
+
+      // Cek kesejajaran sisi berhadapan (Trapesium)
+      const cross1 = (verts[1].gx - verts[0].gx) * (verts[2].gy - verts[3].gy) - (verts[1].gy - verts[0].gy) * (verts[2].gx - verts[3].gx);
+      const cross2 = (verts[2].gx - verts[1].gx) * (verts[3].gy - verts[0].gy) - (verts[2].gy - verts[1].gy) * (verts[3].gx - verts[0].gx);
+      if (Math.abs(cross1) < 1e-4 || Math.abs(cross2) < 1e-4) return 'Trapesium';
+
+      return 'Segi Empat Sembarang';
+    }
+
+    function updateSimBAnalysis() {
+      const panel = document.getElementById('simB-analysis-panel');
+      const verts = simBState.vertices;
+
+      if (!simBState.isClosed || verts.length < 3) {
+        panel.innerHTML = `
+          <div class="bg-blueprint-card border border-blueprint-border rounded-xl p-3 text-xs text-slate-300 space-y-2">
+            <strong class="text-blueprint-cyan block">Status Konstruksi:</strong>
+            <p>Titik sudut terpasang: <span class="font-mono font-bold text-amber-300">${verts.length} titik</span></p>
+            <p class="text-slate-400">Klik minimal 3 titik di perpotongan grid lalu klik kembali <strong>titik pertama (kuning)</strong> untuk menutup bangun dan menghitung keliling & luasnya.</p>
+          </div>
+        `;
+        return;
+      }
+
+      // Hitung Keliling & Luas (Rumus Shoelace presisi tinggi)
+      let perimeter = 0;
+      let area2 = 0;
+      const sideDetails = [];
+      for (let i = 0; i < verts.length; i++) {
+        const v1 = verts[i];
+        const v2 = verts[(i + 1) % verts.length];
+        const len = Math.hypot(v2.gx - v1.gx, v2.gy - v1.gy);
+        perimeter += len;
+        area2 += (v1.gx * v2.gy - v2.gx * v1.gy);
+        sideDetails.push(`Sisi ${i + 1}: ${Number(len.toFixed(2))} sat`);
+      }
+      const area = Math.abs(area2) / 2;
+      const detectedName = detectPolygonName(verts);
+
+      panel.innerHTML = `
+        <div class="bg-blueprint-card border border-cyan-400/40 rounded-xl p-3">
+          <span class="text-[11px] font-mono uppercase text-cyan-300 block">Deteksi Bangun Geometri</span>
+          <span class="text-base font-bold text-white mt-0.5 block">${detectedName}</span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div class="bg-blueprint-card border border-amber-400/40 rounded-xl p-2.5">
+            <span class="text-[10px] font-mono uppercase text-amber-300 block">Keliling Total</span>
+            <span class="font-mono font-bold text-base text-white">${Number(perimeter.toFixed(2))}</span>
+            <span class="text-[10px] text-slate-400 block">satuan panjang</span>
+          </div>
+          <div class="bg-blueprint-card border border-emerald-400/40 rounded-xl p-2.5">
+            <span class="text-[10px] font-mono uppercase text-emerald-300 block">Luas Bidang</span>
+            <span class="font-mono font-bold text-base text-white">${Number(area.toFixed(2))}</span>
+            <span class="text-[10px] text-slate-400 block">kotak satuan²</span>
+          </div>
+        </div>
+
+        <div class="bg-blueprint-card border border-blueprint-border rounded-xl p-3 space-y-1">
+          <span class="text-[11px] font-mono font-bold uppercase text-slate-400 block">Rincian Panjang Sisi</span>
+          <div class="font-mono text-xs text-slate-200 space-y-0.5">
+            ${sideDetails.map(s => `<div>• ${s}</div>`).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    // =========================================================================
+    // 5. LKPD INTERAKTIF (7 SOAL VISUAL GRID SATUAN + URAIAN + PENILAIAN)
+    // =========================================================================
+    const LKPD_QUESTIONS = [
+      {
+        q: '1. [Persegi] Sebuah persegi pada bidang berpetak memiliki panjang sisi 5 satuan. Berapa banyak persegi satuan (1×1) yang menutupi seluruh permukaannya dan berapa kelilingnya?',
+        opts: ['Luas = 20 sat², Keliling = 25 sat', 'Luas = 25 sat², Keliling = 20 sat', 'Luas = 10 sat², Keliling = 20 sat', 'Luas = 25 sat², Keliling = 10 sat'],
+        ans: 1
+      },
+      {
+        q: '2. [Persegi Panjang] Sebuah persegi panjang tersusun atas 4 baris kotak satuan, di mana setiap baris berisi 7 kotak. Jika kelilingnya adalah pagar terluarnya, pernyataan yang tepat adalah...',
+        opts: ['Luas = 28 sat², Keliling = 22 sat', 'Luas = 22 sat², Keliling = 28 sat', 'Luas = 11 sat², Keliling = 22 sat', 'Luas = 28 sat², Keliling = 11 sat'],
+        ans: 0
+      },
+      {
+        q: '3. [Segitiga] Sebuah segitiga siku-siku pada grid memiliki alas 6 satuan dan tinggi 8 satuan. Berapa luas serta keliling segitiga tersebut?',
+        opts: ['Luas = 48 sat², Keliling = 24 sat', 'Luas = 24 sat², Keliling = 14 sat', 'Luas = 24 sat², Keliling = 24 sat', 'Luas = 14 sat², Keliling = 24 sat'],
+        ans: 2
+      },
+      {
+        q: '4. [Jajar Genjang] Jika bagian segitiga siku-siku di sisi kiri sebuah jajar genjang dipotong dan digeser ke sisi kanan, bangun tersebut berubah menjadi persegi panjang berukuran 7 × 4 satuan. Maka luas jajar genjang tersebut adalah...',
+        opts: ['11 satuan luas', '22 satuan luas', '28 satuan luas', '14 satuan luas'],
+        ans: 2
+      },
+      {
+        q: '5. [Trapesium] Trapesium sama kaki memiliki sisi sejajar atas a = 4 satuan, sisi sejajar bawah b = 10 satuan, dan tinggi t = 4 satuan. Berapakah luas dan kelilingnya?',
+        opts: ['Luas = 28 sat², Keliling = 24 sat', 'Luas = 56 sat², Keliling = 24 sat', 'Luas = 28 sat², Keliling = 22 sat', 'Luas = 14 sat², Keliling = 20 sat'],
+        ans: 0
+      },
+      {
+        q: '6. [Belah Ketupat] Sebuah belah ketupat dibungkus rapat oleh persegi panjang berukuran 6 × 8 satuan (sehingga d₁ = 6 dan d₂ = 8). Berapakah luas dan keliling belah ketupat tersebut?',
+        opts: ['Luas = 48 sat², Keliling = 20 sat', 'Luas = 24 sat², Keliling = 20 sat', 'Luas = 24 sat², Keliling = 28 sat', 'Luas = 14 sat², Keliling = 20 sat'],
+        ans: 1
+      },
+      {
+        q: '7. [Layang-layang] Sebuah layang-layang pada grid memiliki diagonal horizontal d₁ = 8 satuan dan diagonal vertikal d₂ = 9 satuan (terbagi atas 3 satuan dan bawah 6 satuan). Berapa luas layang-layang tersebut?',
+        opts: ['72 satuan luas', '36 satuan luas', '17 satuan luas', '34 satuan luas'],
+        ans: 1
+      }
+    ];
+
+    const lkpdUserAnswers = new Array(LKPD_QUESTIONS.length).fill(null);
+    let lkpdGraded = false;
+
+    function renderLKPD() {
+      const wrap = document.getElementById('lkpd-questions-container');
+      wrap.innerHTML = LKPD_QUESTIONS.map((item, qIdx) => `
+        <div class="bg-blueprint-card print-light border border-blueprint-border rounded-xl p-3">
+          <p class="text-xs sm:text-sm font-bold text-white print-light mb-2">${item.q}</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+            ${item.opts.map((opt, oIdx) => {
+              const chosen = lkpdUserAnswers[qIdx] === oIdx;
+              let cls = 'bg-blueprint-bg print-light hover:border-cyan-400 border-blueprint-border text-slate-200';
+              let badge = '';
+              if (lkpdGraded) {
+                if (oIdx === item.ans) {
+                  cls = 'bg-emerald-500/20 border-emerald-400 text-emerald-300';
+                  badge = ' ✅';
+                } else if (chosen && oIdx !== item.ans) {
+                  cls = 'bg-rose-500/20 border-rose-400 text-rose-300';
+                  badge = ' ❌';
+                }
+              } else if (chosen) {
+                cls = 'bg-cyan-500/20 border-blueprint-cyan text-white';
+              }
+              return `
+                <button onclick="selectLKPDOpt(${qIdx}, ${oIdx})" class="btn-studio text-left px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ${cls}">
+                  ${String.fromCharCode(65 + oIdx)}. ${opt}${badge}
+                </button>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function selectLKPDOpt(qIdx, oIdx) {
+      SoundEngine.click();
+      lkpdUserAnswers[qIdx] = oIdx;
+      lkpdGraded = false;
+      renderLKPD();
+    }
+
+    function gradeLKPD() {
+      let correct = 0;
+      lkpdUserAnswers.forEach((ans, i) => {
+        if (ans === LKPD_QUESTIONS[i].ans) correct++;
+      });
+      lkpdGraded = true;
+      renderLKPD();
+
+      const score = Math.round((correct / LKPD_QUESTIONS.length) * 100);
+      document.getElementById('lkpd-score-val').textContent = `${score} / 100`;
+      document.getElementById('lkpd-feedback-msg').textContent =
+        `Anda menjawab benar ${correct} dari ${LKPD_QUESTIONS.length} soal.`;
+
+      if (score >= 70) {
+        SoundEngine.fanfare();
+        showToast(`Penilaian selesai! Skor Anda: ${score}/100`, '🏆');
+      } else {
+        SoundEngine.error();
+        showToast(`Skor Anda: ${score}/100. Periksa kembali pembahasannya!`, '📘');
+      }
+    }
+
+    function resetLKPD() {
+      SoundEngine.sweep();
+      lkpdUserAnswers.fill(null);
+      lkpdGraded = false;
+      document.getElementById('lkpd-nama').value = '';
+      document.getElementById('lkpd-kelas').value = '';
+      document.getElementById('lkpd-essay').value = '';
+      document.getElementById('lkpd-score-val').textContent = '0 / 100';
+      document.getElementById('lkpd-feedback-msg').textContent = 'Jawab 7 soal grid satuan di samping lalu klik tombol Cek Nilai.';
+      renderLKPD();
+      showToast('LKPD telah dikembalikan ke awal', '🔄');
+    }
+
+    function downloadLKPD() {
+      const nama = document.getElementById('lkpd-nama').value.trim() || 'Peserta Didik';
+      const kelas = document.getElementById('lkpd-kelas').value.trim() || 'Fase F';
+      const skor = document.getElementById('lkpd-score-val').textContent;
+      const essay = document.getElementById('lkpd-essay').value.trim() || '(Belum diisi)';
+
+      const lines = [
+        '==========================================================',
+        'LAPORAN HASIL LKPD - LAB MAYA MATEMATIKA (FASE F)',
+        'Materi: Konsep Dasar Keliling & Luas Bangun Datar',
+        '==========================================================',
+        `Nama Peserta Didik : ${nama}`,
+        `Kelas / Kelompok   : ${kelas}`,
+        `Skor Bagian A      : ${skor}`,
+        '----------------------------------------------------------',
+        'Rincian Jawaban Bagian A:',
+        ...LKPD_QUESTIONS.map((item, idx) => {
+          const u = lkpdUserAnswers[idx];
+          const uStr = u !== null ? `${String.fromCharCode(65 + u)}. ${item.opts[u]}` : 'Tidak dijawab';
+          const status = u === item.ans ? '[BENAR]' : '[SALAH]';
+          return `${idx + 1}. ${status} Jawaban: ${uStr}`;
+        }),
+        '----------------------------------------------------------',
+        'Jawaban Bagian B (Analisis Pembuktian Konsep):',
+        essay,
+        '=========================================================='
+      ];
+
+      const blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `LKPD_Bangun_Datar_${nama.replace(/\s+/g, '_')}.txt`;
+      a.click();
+      URL.revokeObjectURL(url);
+
+      SoundEngine.fanfare();
+      showToast('Laporan LKPD berhasil diunduh (.txt)', '📥');
+    }
+
+    // =========================================================================
+    // 6. NAVIGASI TAB, MODE SIMULASI & RESET GLOBAL
+    // =========================================================================
+    function switchTab(tabId) {
+      SoundEngine.click();
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+      document.querySelectorAll('.tab-nav-btn').forEach(b => {
+        b.className = 'tab-nav-btn btn-studio flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-slate-300 hover:text-white hover:bg-blueprint-card';
+      });
+
+      const panel = document.getElementById(`panel-${tabId}`);
+      const btn = document.getElementById(`tab-btn-${tabId}`);
+      if (panel) panel.classList.remove('hidden');
+      if (btn) {
+        btn.className = 'tab-nav-btn btn-studio flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-blueprint-cyan text-slate-950 shadow-sm';
+      }
+
+      if (tabId === 'simulasi') {
+        setTimeout(() => {
+          resizeCanvasA();
+          resizeCanvasB();
+        }, 40);
+      }
+    }
+
+    function setSimMode(mode, sound = true) {
+      if (sound) SoundEngine.click();
+      const cA = document.getElementById('sim-container-A');
+      const cB = document.getElementById('sim-container-B');
+      const bA = document.getElementById('sim-mode-btn-A');
+      const bB = document.getElementById('sim-mode-btn-B');
+
+      if (mode === 'A') {
+        cA.classList.remove('hidden');
+        cB.classList.add('hidden');
+        bA.className = 'btn-studio px-3.5 py-1.5 rounded-lg text-xs font-bold bg-blueprint-cyan text-slate-950 shadow';
+        bB.className = 'btn-studio px-3.5 py-1.5 rounded-lg text-xs font-bold bg-blueprint-card text-slate-300 hover:text-white border border-blueprint-border';
+        setTimeout(resizeCanvasA, 30);
+      } else {
+        cA.classList.add('hidden');
+        cB.classList.remove('hidden');
+        bB.className = 'btn-studio px-3.5 py-1.5 rounded-lg text-xs font-bold bg-blueprint-cyan text-slate-950 shadow';
+        bA.className = 'btn-studio px-3.5 py-1.5 rounded-lg text-xs font-bold bg-blueprint-card text-slate-300 hover:text-white border border-blueprint-border';
+        setTimeout(resizeCanvasB, 30);
+      }
+    }
+
+    function openResetModal() {
+      SoundEngine.click();
+      document.getElementById('reset-modal').classList.remove('hidden');
+    }
+
+    function closeResetModal() {
+      SoundEngine.click();
+      document.getElementById('reset-modal').classList.add('hidden');
+    }
+
+    function confirmGlobalReset() {
+      closeResetModal();
+      selectTeoriShape('persegi', false);
+      selectSimAShape('persegi', false);
+      resetSimA();
+      loadPresetToCanvasB('trapesium', false);
+      resetLKPD();
+      switchTab('teori');
+      SoundEngine.sweep();
+      showToast('Seluruh laboratorium maya telah direset ke awal!', '🔄');
+    }
+
+    // Inisialisasi Aplikasi
+    window.addEventListener('DOMContentLoaded', () => {
+      initTeoriTab();
+      initSimA();
+      initSimB();
+      renderLKPD();
+      window.addEventListener('resize', () => {
+        resizeCanvasA();
+        resizeCanvasB();
+      });
+    });
+  </script>
+</body>
+</html>
